@@ -14,7 +14,6 @@
 ⍝ 2021 05 13 MKrom: handle files without extension
 ⍝ 2021 05 14 Adam: Add ]in -outdir
 ⍝ 2022 03 29 Adam: [19747] handle extensions in any case
-⍝ 2024 03 15 MKrom: use AtfIn GitHub code
 
     (⎕IO ⎕ML)←1
 
@@ -37,7 +36,7 @@
       r[2].Parse←'1 -atf -obj= -file[=] -range= -lock= -q'
     ∇
 
-    ∇ r←Run(Cmd A);arg;nars;files;q;Cn;ext;msg;folder;name;n;findExt;lc;x;b;apl;TMPNS;WSID;opts;AtfIn
+    ∇ r←Run(Cmd A);arg;nars;files;q;Cn;ext;msg;folder;name;n;findExt;lc;x;b;apl;TMPNS;WSID;opts;AtfIn;xfr
     ⍝ Transfer code to/from files
       Cn←AllCmds⍳⊂Cmd ⋄ lc←⎕SE.SALTUtils.(lCase⍣WIN) ⋄ findExt←{⎕C ⍵↑⍨-⊥⍨b∧0∊b←'.'≠⍵}
       (folder name)←⎕SE.SALTUtils.{'/\'splitLast ⍵}'"'~⍨arg←1⊃A.Arguments
@@ -68,28 +67,18 @@
       :Select Cn
       :Case 1 ⍝ IN
          ⍝ We accept ATF, NARS and extended format files (DYW, APX, etc.)
-          :If A.atf∨'atf'≡ext←ext,(A.atf∧0∊⍴ext)/'atf'
+           ⎕SE.Link.Create ((⍕⎕THIS),'.AtfIn') 'c:\devt\AtfIn\APLSource\AtfIn'
+          :If A.atf∨('atf'≡ext←ext,(A.atf∧0∊⍴ext)/'atf')∨0≠≢A.outdir
               ⍝ ⎕FIX ⎕SE.SALT.Load'lib\atfin -source'
-
-              ⎕SE.Link.Create ((⍕⎕THIS),'.AtfIn') 'c:\devt\AtfIn\APLSource\AtfIn'
               b←arg,('.'∊arg)↓'.',A.Propagate'alphabets apl' ⍝ ensure '.' in name
-              :If 0≢A.outdir
-                  'TMPNS'⎕NS''
-                  WSID←⎕WSID
-                  TMPNS AtfIn.ATFIN b
-                  ⎕WSID←WSID
-                  (opts←⎕NS'').(arrays sysVars caseCode)←1
-                  opts ⎕SE.Link.Export TMPNS A.outdir
-              :Else
-                  ##.THIS AtfIn.ATFIN b
-              :EndIf
+              ((1+0≢A.outdir)⊃##.THIS A.outdir) AtfIn.ATFIN b              
           :ElseIf ext≡'nars'
               ##.⎕CY'xfrcode.dws'
-              ##.THIS ##.xfr.nars.makeWS arg
+              ##.THIS xfr.nars.makeWS arg
           :Else
               :If ∨/b←APLs∊⊂apl←A.apl~0 ⋄ apl←' -apl=',(b⍳1)⊃Surr ⋄ :EndIf
               ##.⎕CY'xfrcode.dws'
-              ##.THIS ##.xfr.∆xfrfrom arg,apl,A.Propagate'file list noam obj q range replace trans'
+              ##.THIS xfr.∆xfrfrom arg,apl,A.Propagate'file list noam obj q range replace trans'
           :EndIf
      
       :Case 2 ⍝ OUT: we export to ATF if the extension is ATF or -atf has been supplied
