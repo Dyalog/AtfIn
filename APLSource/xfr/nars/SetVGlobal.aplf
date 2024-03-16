@@ -1,0 +1,14 @@
+ no←SetVGlobal env;type;nelem;rank;data;shape;ndata
+⍝ Set 1 global given a matching environment
+ (no type nelem rank data)←env.(1↓Lengths↑¨Offsets↓¨⊂Block)
+ (no nelem rank)←∆FI1¨no nelem rank
+ shape←rank⍴ndata←1⊃⎕VFI data
+ :If type='C'
+     GLOBALS[no]←⊂shape⍴Xlate UniChars(1+data⍳'''')↓data
+ :ElseIf 'A'=type ⍝ must be Atomic vector
+     GLOBALS[no]←⊂shape{⍺⍴⍵[0]+⍵[1]×⍳×/⍺}rank↓ndata
+ :ElseIf 'N'≠type ⍝ must be numeric
+     GLOBALS[no]←⊂shape⍴rank↓ndata
+ :Else ⍝ must ne Nested
+     GLOBALS[no]←⊂shape⍴rank↓⍎'( :\d+)+'⎕R{2⌽']),(GLOBALS[',⍵.Match~':'}data
+ :EndIf

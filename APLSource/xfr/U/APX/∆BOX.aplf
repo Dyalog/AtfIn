@@ -1,0 +1,11 @@
+ r←{la}∆BOX ra;sep;fill;b;max;⎕ML
+    ⍝ ⎕BOX in APLX
+ :If 900⌶⍬ ⋄ la←''⍴0⍴ra ⋄ :EndIf
+ (sep fill)←2↑la
+ ⎕ML←0
+ :If 2∊⍴⍴ra ⍝ matrix case
+     b←,1,⌽∨\⌽fill≠ra ⋄ r←1↓b/,sep,ra
+ :Else ⍝ vector case
+     max←⌈/⊃,/⍴¨r←1↓¨(r∊sep)⊂r←sep,ra
+     r←↑max↑¨r,¨⊂max⍴fill
+ :EndIf

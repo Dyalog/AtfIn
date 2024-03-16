@@ -1,0 +1,55 @@
+ str←{name}∆formeVar object;ravelled;⎕PP;type;rksh;obj;tmp;E
+⍝ DanB 2006 Form simple object possibly with name.
+ rksh←⍴E←'û'
+⍝ First see if we're at the top to note any ns in case of recursivity
+ :If 0=⎕NC tmp←'nsDone' ⋄ ⎕SHADOW tmp ⋄ ⍎tmp,'←⍬' ⋄ :EndIf
+⍝ Second take care of scalars. A lot of gymnastics to do that.
+ :If isOr object   ⍝ ⎕ORs
+     :If 1⊃(tmp obj)←{0::,0 ⋄ 1,⎕NS ⍵}object ⍝ is this the ⎕OR of a NS/GUI?
+        ⍝ Recreate a similar looking NS
+         obj.⎕DF⍕object
+        ⍝ Classe cannot be ⎕ORed so this is either a NS or GUI
+         (type str)←∆formeNs obj
+        ⍝ Adjust type to indicate ⎕OR
+         type←'QTC'['PSC'⍳type]
+     :Else ⍝ must the representation of a fn/op
+        ⍝ If this is a composed fn there is little we can do
+         :If '∘'∊str←⍕object
+        ⍝ ⎕←'** Warning: object "',name,'" cannot be recreated'
+         :EndIf
+         type←'R' ⋄ str←2⊃∆formeVar str
+     :EndIf
+ :ElseIf {0::0 ⋄ ⎕NULL≡⍵}object
+     type←'U' ⋄ str←''
+ :ElseIf 9=⎕NC'object'
+     :If name≢E ⋄ type←'P'
+     :OrIf 9≠⎕NC str←{(⍵.⎕DF R){⍵}⍕⍵⊣R←⍵.⎕DF ⎕NULL}object
+         (type str)←∆formeNs object
+     :EndIf
+ :Else  ⍝ higher rank arrays or simple scalar
+     rksh←(⍕(⍴rksh),rksh←⍴object),' '
+     :If 326∊⎕DR ravelled←,object
+         str←''
+         type←(1+1<|≡object)⊃'ME' ⍝ Enclosed or Mixed type
+         :Repeat  ⍝ at least once - account for prototype
+             str←str,E ∆formeVar 1⊃1↑ravelled
+         :Until 1≥⍴ravelled
+         :OrIf 0=⍴ravelled←1↓ravelled ⍝ to avoid NONCE on last NULL
+     :Else
+         :If 'C'∊type←(1+0∊1↑0⍴ravelled)⊃'CN'
+         :AndIf ~∧/ravelled∊⎕AV
+        ⍝ Unicode chars. Note this is not foolproof, ⎕av may not
+        ⍝ correspond to the target environment.
+             ravelled←(⍎'⎕ucs')ravelled ⋄ type←'I' ⍝ Intl'
+         :EndIf
+        ⍝ If the numbers are too many we hit a limit error on ⍕
+        ⍝ so we need to break down the work into smaller sizes
+         str←{10::(∇ n↑⍵),' ',∇(n←⌈0.5×⍴⍵)↓⍵ ⋄ ⍕⍵}ravelled
+     :EndIf
+ :EndIf
+ str←type,⊂rksh,str
+⍝
+⍝ Add name if present
+ :If 0≠⎕NC'name'
+     str←name ∆addName str
+ :EndIf

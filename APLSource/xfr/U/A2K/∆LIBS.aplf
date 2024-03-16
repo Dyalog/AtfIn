@@ -1,0 +1,5 @@
+ r←∆LIBS;⎕ML;⎕IO
+⍝ Replacement for ⎕LIBS. Uses global ⍙LIBS. Relies on ∆LIBD to define it.
+ ⎕ML←⎕IO←1
+ :If 0∊⎕NC'⍙LIBS' ⋄ ⍙LIBS←0 2⍴0 ⋄ :EndIf
+ r←('I10'⎕FMT ⍙LIBS[;1]),' ',⊃1↓LIBS[;2],⍨⊂''

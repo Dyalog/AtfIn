@@ -1,0 +1,11 @@
+ testws;valid;allfns;dubious;chk
+    ⍝ This fn verifies that no character has been missed when importing
+    ⍝ code. To do so it screens out all the characters it knows are valid.
+ valid←⊂LC,' ;:@#,.-[]{}/⋄!"£$%^&*()_+¨¯<≤=≥>≠∨∧×÷≡⍫⍒⍋⌽⍉⊖⍟⍱⍲⌹?⍵∊⍴~↑↓⍳○*←→↑↓⌶⍣⍞⍬⍺⌈⌊_∇∆∘''⎕⍎⍕⍺⌈⌷≡⍪≢⊢⊂⊥⊤|⍝⍀⌿⊣⊃∩∪⍷⍙⍨',⎕A,⎕D
+ :If 0∊⍴allfns←⎕RSI[⎕IO].⎕NL-3 4
+ :OrIf ∧/~chk←0≠∊⍴¨dubious←valid(⎕RSI[⎕IO]).{∪(,⎕CR ⍵)~⍺}¨allfns
+     ⎕←'Nothing to report'
+ :Else
+     ⎕←'These functions have dubious characters:'
+     ⎕←chk⌿allfns,[1.1]dubious
+ :EndIf

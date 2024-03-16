@@ -1,0 +1,11 @@
+ r←la ∆OV ra;src;nl ⍝ ⎕OV in APLX
+ src←⎕IO⊃⎕NSI
+ nl←{⍵.⎕NL⍳10}
+ :Select la
+ :Case 0
+     r←#.⎕NS(src,'.')∘,¨↓ra
+ :CaseList 2 1
+     src ⎕NS ra ⋄ r←nl ra
+ :Case 3
+     r←nl ra
+ :EndSelect

@@ -1,0 +1,2 @@
+ r←n_get filename
+ r←80 ¯1 ⎕MAP filename

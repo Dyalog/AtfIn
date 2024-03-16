@@ -1,0 +1,19 @@
+ Z←∆IMPORT V;file;type;⎕IO ⍝ Emulate APLX ⎕import
+ ⎕IO←1
+ :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
+ file←1⊃V ⋄ type←819⌶2⊃V ⍝ Lowercase
+
+ :Select type
+ :Case 'txt'
+     Z←n_get file
+ :CaseList 'utf8' 'utf-8' 'utf16' 'utf-16'
+     type←(1+'6'=¯1↑type)⊃'UTF-8' 'UTF-16'
+     Z←n_get file
+     Z←type ⎕UCS ⎕UCS Z
+ :CaseList 'csv' 'tsv'
+     Z←LoadData.LoadTEXT file(('csv' 'tsv'⍳⊂type)⊃',',⎕UCS 9)
+ :Case 'xml'
+     Z←⎕XML 1⊃⎕NGET file'UTF-8'
+ :Else
+     'Unknown file type'⎕SIGNAL 11
+ :EndSelect

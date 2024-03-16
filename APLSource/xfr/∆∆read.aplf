@@ -1,0 +1,16 @@
+ w←∆∆read xFr;n;⎕IO;toread;buf;source
+⍝ read an opened file, leave it open & return the next object
+⍝ xFr is the handle to the file
+ source←xFr,82 10240
+ ⎕IO←1 ⋄ →(⎕NC'∆∆readBuf')⍴l5 ⋄ ∆∆readBuf←''
+l5:→(9<⍴∆∆readBuf)⍴l7 ⍝ not enough chars, read some
+ buf←⎕NREAD source
+ ∆∆readBuf←∆∆readBuf,buf
+⍝ we need to know how many to read
+l7:→(⍴w←∆∆readBuf)↓0 ⍝ there's enough chars for the length
+ n←w⍳' ' ⋄ toread←2⊃⎕VFI n↑w ⋄ ∆∆readBuf←n↓w ⋄ w←''
+l10:n←toread⌊⍴∆∆readBuf ⍝ enough?
+ w←w,n↑∆∆readBuf ⋄ ∆∆readBuf←n↓∆∆readBuf ⋄ →(toread←toread-n)↓0
+⍝ if more chars are needed we grab them here
+ →(0∊⍴n←⎕NREAD source)↓l20 ⋄ ÷⎕←'no more chars!'
+l20:∆∆readBuf←n ⋄ →l10

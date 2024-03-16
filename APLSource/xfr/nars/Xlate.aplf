@@ -1,0 +1,3 @@
+ new←Xlate line
+⍝ Translate a NARS line into APL
+ new←'\{[^}]+\}'⎕R repBrace line

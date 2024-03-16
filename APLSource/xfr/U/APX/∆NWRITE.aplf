@@ -1,0 +1,14 @@
+ {r}←data ∆NWRITE arg;tieno;startbyte;type;conv
+    ⍝ Emulate APLX ⎕NWRITE
+    ⍝ startbyte=-1 not supported yet
+ :If 1∊⍴,arg ⍝ write as is
+     r←data ⎕NAPPEND tieno
+ :Else
+     (tieno conv startbyte)←arg,(≢arg)↓0 0 ¯1
+     type←n_type conv
+     data←data n_data conv
+
+     :If startbyte=¯2 ⋄ r←data ⎕NAPPEND tieno type
+     :Else ⋄ r←data ⎕NREPLACE tieno startbyte type
+     :EndIf
+ :EndIf

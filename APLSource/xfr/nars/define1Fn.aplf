@@ -1,0 +1,21 @@
+ r←Tns define1Fn env;lines;name;code;lns;bad
+⍝ Define a fn from the ⎕S match namespace
+⍝ 1st group is fn name
+⍝ 2nd group is line defns, each preceded by NN=
+ bad←'⍙' ⋄ r←1
+ :If 2∊+/CR NL∊⍨lines←env.(Block[Offsets[2]+⍳Lengths[2]])
+     name←env.(Block[Offsets[1]+⍳Lengths[1]])
+     code←{(1+⍵⍳'=')↓⍵}Xlate'(:\d++)'⎕R{⊃GLOBALS[⍎⍵.Match~':']}lines~CR NL
+     :Trap 0
+         Tns⍎name,'←',code
+     :Else
+         ⎕←'** Problem with ',name,'←',code,' (see ',bad,name,')'
+         {Tns⍎bad,name,'←⍵'}code ⋄ r←0
+     :EndTrap
+ :Else
+     :If ~r←0 2∨.=10|⎕DR Tns.⎕FX lns←{(1+⍵⍳'=')↓⍵}∘Xlate¨¯1↓xcut lines
+         name←bad,⍕1+⌈/⍎'0',,' ',0 1↓bad ⎕NL 2
+         ⎕←'** Problem with ',(⎕IO⊃lns),' (see ',name,')'
+         {Tns⍎name,'←⍵'}lns
+     :EndIf
+ :EndIf

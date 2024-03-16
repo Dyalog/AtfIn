@@ -1,0 +1,9 @@
+ str←UniChars str;b;⎕IO;i;H;p;keep
+⍝ Change {\xDDDD} into a Unicode char
+ :If ∨/b←'{\x'⍷¯5↓str
+     ⎕IO←0 ⋄ i←(3+⍳4)∘.+p←b/⍳⍴b ⋄ H←⎕D,6↑⎕A
+ :AndIf ~0∊⍴p←b/⍳⍴b←b\keep←(∧⌿str[i]∊H)∧'}'=str[7+p]
+    ⍝ Replace the character in situ
+     str[p+7]←⎕UCS 16⊥H⍳str[keep/i]
+     str←(=\b⍱¯7⌽b←(⍴str)↑b)/str
+ :EndIf

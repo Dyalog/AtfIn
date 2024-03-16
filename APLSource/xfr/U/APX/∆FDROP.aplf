@@ -1,0 +1,11 @@
+ r←{la}∆FDROP arg
+⍝ Fdrop in APLX
+ :If 900⌶⍬
+     :If 0=1↓2↑arg
+         ⎕FDROP(1↑arg),¯1 ⋄ r←1
+     :Else
+         .
+     :EndIf
+ :Else
+     .
+ :EndIf

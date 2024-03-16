@@ -1,0 +1,2 @@
+ Z←∆ERM ⍝ Emulate APLX ⎕ERM
+ Z←¯1↓↑,/⎕DM,¨⎕UCS 13

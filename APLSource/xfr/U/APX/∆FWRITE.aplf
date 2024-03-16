@@ -1,0 +1,9 @@
+ {r}←data ∆FWRITE fc;file;cpt
+⍝ File write in APLX
+ r←⍬
+ (file cpt)←fc
+ :If cpt=0
+     data ⎕FAPPEND file
+ :Else
+     data ⎕FREPLACE fc
+ :EndIf

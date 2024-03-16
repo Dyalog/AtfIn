@@ -1,0 +1,6 @@
+ r←∆LIB n;⎕IO
+ r←0 0⍴'' ⋄ ⎕IO←0
+ :If 0∊⎕NC'⍙LIBS' ⋄ ⍙LIBS←0 2⍴0 ⋄ :EndIf
+ :If n∊⍙LIBS[;0]
+     r←⎕FLIB 1⊃,⍙LIBS[⍙LIBS[;0]⍳n;]
+ :EndIf

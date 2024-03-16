@@ -1,0 +1,2 @@
+ str←ab Repl str
+ str[{⍵/⍳⍴⍵}str=1↑ab]←1↓ab

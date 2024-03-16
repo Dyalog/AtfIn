@@ -1,0 +1,25 @@
+ BLOCK←aAÁ GETNEXTBLOCK LINES;⎕IO;LCOUNT;BL;colw;from;to;unique;WithAll;UntilZ;WholeSet;DiffOnly
+     ⍝ For translating from .ATF files (e.g. produced by APL2 ')OUT')
+     ⍝ into Dyalog APL (ASCII)
+     ⍝ BLOCK will always have 80-83 columns and 0+ rows, unless the end
+     ⍝ of the input file has been reached (then 0 rows).
+     ⍝ Block, TR, Filenum are global.
+     ⍝
+ ⎕IO←0
+ colw←1↓⍴Block                  ⍝ Block acts as a buffer
+ :If LINES>1↑⍴Block             ⍝ has Block enough lines to meet request?
+     BL←⎕NREAD Filenum,82,LINES×colw
+     BL←((⌊(⍴BL)÷colw),colw)⍴BL ⍝ and reshape to lines of 80 to 83
+     Block⍪←BL                  ⍝ buffer it
+ :EndIf                         ⍝ Return what is asked for if possible
+ BLOCK←((LCOUNT←LINES⌊1↑⍴Block),colw)↑Block
+ Block←(LCOUNT,0)↓Block
+
+      ⍝ Alphabets' conversion
+ unique←∪,BLOCK
+ WithAll←unique,⍨∊
+ UntilZ←{'Á'=⍵:⎕Á ⋄ ⎕UCS(⍳26)+⎕UCS ⍵}
+ WholeSet←WithAll UntilZ¨
+ DiffOnly←≠/(/¨)⊢
+ from to←WholeSet¨DiffOnly'aAÁ'aAÁ
+ BLOCK←to[from⍳BLOCK]

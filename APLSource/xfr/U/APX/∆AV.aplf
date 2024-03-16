@@ -1,0 +1,7 @@
+ r←∆AV ⍝ Emulate APLX ⎕AV: Note that it does not have 256 distinct elements
+⍝ Because of Classic we need to use a different AVN
+ :If 82∊⎕DR''
+     r←⎕UCS ∆avnClassic
+ :Else
+     r←⎕UCS ∆avn
+ :EndIf

@@ -1,0 +1,68 @@
+[
+ (
+  'This code is used to transfer simple objects to/from ATF files.'
+ )
+ (
+  ''
+ )
+ (
+  'To use it do'
+ )
+ (
+  '  ⍙⍙.ATFIN ''filepath[.atf] -alphabets=aAA -APL=aaa''  '
+ )
+ (
+  ''
+ )
+ (
+  'where APL can be any of the strings found in ⍙⍙.APLsCovered.'
+ )
+ (
+  '-alphabets= indicates what lowercase, uppercase and underscored characters are translated to.'
+ )
+ (
+  ''
+ )
+ (
+  'The global variable PROBLEMS is used to capture objects that cannot'
+ )
+ (
+  'be handled.'
+ )
+ (
+  ''
+ )
+ (
+  'The global char vector ⍙⍙.Translate contains the map from the source'
+ )
+ (
+  '⎕AV to DYALOG''s ⎕AV. ⎕AV[N] in the source APL becomes ⎕AV[⍙⍙.Translate[N]]'
+ )
+ (
+  'in DYALOG. This table would be slightly different for APL2MF, but that has been disabled.'
+ )
+ (
+  'If no -APL is supplied the program will attempt to guess the source'
+ )
+ (
+  'APL but there is no guaranty this will work.'
+ )
+ (
+  ''
+ )
+ (
+  'To send a ws to file use'
+ )
+ (
+  '   ⍙⍙.ATFOUT ''filepath[.atf] -objects=...'''
+ )
+ (
+  ''
+ )
+ (
+  'If you have any problems with this code, then please'
+ )
+ (
+  'direct your enquiries to whoever supplied your copy of Dyalog APL.'
+ )
+]

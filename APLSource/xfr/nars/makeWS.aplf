@@ -1,0 +1,58 @@
+ msg←{targetNS}makeWS string;p;find;del;gstr;n;GLOBALS;WSID;findSection;Sections
+⍝ Make a ws from a NARS representation
+⍝ A NARS ws is made up os ASCII text with [sections]
+⍝ The sections are [General], [Globals], [Vars.N], [Fcns.N] and [X.cc]
+
+⍝ We need some special characters, this will only work in Unicode:
+ n←{⍵/⍳⍴⍵}'1'='00000000000000000000010000000000000110000000000100011100010010000110110001000010011111111111111111111111111111'
+ p←8734 9050 9022 9019 9026 9031 9032 9040 9047 9057 9058 9060 9061 9069 9080 9398 9399 9400 9401 9402 9403 9404 9405 9406 9407 9408 9409 9410 9411 9412 9413 9414 9415 9416 9417 9418 9419 9420 9421 9422 9423 9062 8838 8839
+ MAP[n;1]←⎕UCS p
+
+⍝ Accept a filename as argument
+ :If ⍱/CR NL∊string
+     string←⎕SE.SALTUtils.GetUnicodeFile{⍵,(~'.'∊⍵)/'.ws.nars'}string
+ :EndIf
+ :If 0=⎕NC'targetNS' ⋄ targetNS←⍬⍴⎕RSI ⋄ :EndIf
+ del←⍬⍴CR NL∩string←string~(∧/CR NL∊string)/NL ⍝ normalize
+
+⍝ Split into sections
+ Sections←del{1↓¨(⍺'['⍷s)⊂s←⍺,⍵}string
+ find←{(⍴,⍵)+1⍳⍨⍵⍷⍺}  ⍝ find position AFTER substring searched
+ findSection←{Sections⊃⍨1⍳⍨((⍴⍵)↑¨Sections)∊⊂⍵}
+
+⍝ [General] section
+⍝ The General section contains the Version, WSID, timestamp etc.
+ string←findSection'[General]'
+ p←string find'WSID=' ⋄ string←p↓string
+ WSID←del toEOL string
+
+⍝ [Globals] section
+⍝ This section defines unique strings later used to define other elements
+⍝ like variables and function lines
+ string←findSection'[Globals]'
+ p←string find'Count='
+ gstr←p↑string  ⍝ the entire Globals section is kept here
+ string←p↓string
+ GLOBALS←0/⍨∆FI del toEOL string ⍝ initialize GLOBALS
+⍝ Define each constant
+ {}'^:(\d+)=V +(.) +(\d+) +(\d+) (.*)$'⎕S SetVGlobal gstr
+ {}'^:(\d+)=F (.*)$'⎕S SetFGlobal gstr
+
+⍝ [Vars.n] section
+⍝ Create the variables, we'll need GLOBALS for that
+ string←findSection'[Vars'
+ p←string find'Count='
+ gstr←p↑string
+ string←p↓string
+ msg←⍕+/'^\d+=([^=]+)=(.*)'⎕S(targetNS∘defineVar)gstr
+ msg,←' variables and '
+
+⍝ [Fcns.n] section
+⍝ Recreate the fns/ops
+ p←0
+ :For string :In ((1⊃¨Sections)∊⎕D)/Sections
+     p+←'\[\d+\.([^\]]+)\](.*?)^C'⎕S(targetNS∘define1Fn)⎕OPT('Mode' 'M')('DotAll' 1)+string
+ :EndFor
+ msg,←(⍕p),' functions defined',⎕AV[3],'      )SAVE ',WSID
+
+⍝ Done, )SAVE ws

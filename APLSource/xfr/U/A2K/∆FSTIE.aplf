@@ -1,0 +1,10 @@
+ file ∆FSTIE tie;n;name;⎕IO;vf
+⍝ Replacement for ⎕FSTIE using lib nos and global ⍙LIBS
+ ⎕IO←0
+ :If 0 0⊃vf←⎕VFI'x',⍨name←file ⍝ valid libno?
+     :If 0∊⎕NC'⍙LIBS' ⋄ ⍙LIBS←0 2⍴0 ⋄ :EndIf
+     n←n+6×0=n←1 0⊃vf ⋄ name←(+/∧\file∊⎕D,' ')↓file
+     name,⍨←↑⍙LIBS[⍙LIBS[;0]⍳n;1]
+ :EndIf
+ name ⎕FSTIE tie
+⍝

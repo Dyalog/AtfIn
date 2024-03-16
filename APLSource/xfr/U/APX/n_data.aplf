@@ -1,0 +1,8 @@
+ data←data n_data conv;ix;⎕IO
+⍝ Convert data for native file write
+ ⎕IO←0
+ :Select conv
+ :Case 0 ⋄ data←⎕UCS ∆AV⍳data
+ :Case 5 ⋄ data←⎕UCS'UTF-16'⎕UCS data
+ :Case 8 ⋄ data←⎕UCS'UTF-8'⎕UCS data
+ :EndSelect

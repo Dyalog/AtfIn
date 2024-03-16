@@ -1,0 +1,58 @@
+ rc←{options}SaveTEXT params;file;⎕ML;⎕IO;NL;CR;lCase;if;isChar;CRLF;LF;data;fdel;rdel;stream;sz;tie;win;Q
+⍝ Save data to a TEXT file                                   danb 2008 V1.1
+
+⍝ Arguments are:  Data Filename [Separators]
+⍝ The default separators is ',' CRLF (for Windows, NL for Unix)
+⍝ If the separator is found in the data it is enclosed in '"', therefore '"' must NOT appear in the data.
+⍝ If a fixed length is instead given for each column then any character may exist in the data.
+⍝ It will complain if anything seems out of order.
+
+⍝ The options are: 0 (default): create new file, 1:overwrite if necessary
+⍝ The function returns 0 if all went well or a return code (1=file exists)
+
+⍝ Example:
+⍝   SaveTEXT data '\temp\myfile.csv' ';'           ⍝ CSV file using ';' as delimiter
+⍝   SaveTEXT data '\temp\myfile.txt' ',' LF        ⍝ , delimited file using LF as record delimiter
+⍝   SaveTEXT data '\temp\myfile.wxyz' (23 32 21)   ⍝ fixed width delimited file using CRLF as record delimiter
+⍝   SaveTEXT data '\temp\myfile.wxyz' (3 9 8) 133  ⍝ fixed width delimited file using #133 as record delimiter
+
+ if←/⍨                       ⍝ --- local fns ---
+ isChar←{0 2∊⍨10|⎕DR 1/⍵}
+ lCase←{n←⍴l←'abcdefghijklmnopqrstuvwxyz' ⋄ ⎕IO←0 ⋄ ~∨/b←n>i←⎕A⍳s←⍵:⍵ ⋄ (b/s)←l[b/i] ⋄ s}
+
+ ⎕IO←⎕ML←1                   ⍝ --- local variables ---
+ win←'W'∊⊃⊃'.'⎕WG'aplversion'
+ (CR LF)←CRLF←⎕UCS(~win)↓13 10 ⋄ Q←'"'
+ (data file fdel rdel)←params,(⍴params)↓0 0 ','CRLF ⍝ 4 arguments
+
+ :If 0∊⍴data
+     stream←''
+ :Else ⍝ something to do
+     :If isChar fdel
+         data←{∨/(fdel,Q)∊⍵:Q,((1+Q=⍵)/⍵),Q ⋄ ⍵}¨⍕¨data ⍝ add double quotes around
+         data←1↓¨,/fdel,¨data
+     :Else
+         sz←⍴data←(¯2↑1,⍴data)⍴data ⍝ ensure matrix
+         fdel←fdel×¯1*~isChar¨data[⊃sz;] ⍝ better be all the same
+         data←,/(sz⍴fdel)↑¨data
+     :EndIf
+    ⍝ If the record separator is numeric we turn it into text
+     :If ~isChar rdel ⋄ rdel←⎕UCS rdel ⋄ :EndIf
+     stream←(⍴,rdel)↓∊rdel∘,¨data
+ :EndIf
+
+⍝ This version does without .Net
+ rc←1
+ :Trap 22
+     :If 0=⎕NC'options' ⋄ options←0 ⋄ :EndIf
+     :If 1∊options
+         {22:: ⋄ ⍵ ⎕NERASE ⍵ ⎕NTIE 0}file
+     :EndIf
+     tie←file ⎕NCREATE 0   ⍝ the file must NOT exist
+⍝ Change the stream into UTF-8 format
+     stream←¯17 ¯69 ¯65,{⍵-256×127<⍵}'UTF-8'⎕UCS stream
+⍝ Write out
+     stream ⎕NAPPEND tie 83
+     ⎕NUNTIE tie
+     rc←0
+ :EndTrap

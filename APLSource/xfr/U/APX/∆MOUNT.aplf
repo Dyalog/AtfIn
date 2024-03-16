@@ -1,0 +1,11 @@
+ r←∆MOUNT arg;id;sha;shm;max
+⍝ Simulate ⎕MOUNT in APLX
+ :If 0=⎕NC id←'#.APLX.⍙MOUNTS' ⋄ ⍎id,'←10 0⍴⎕a' ⋄ :EndIf
+ :If 0∊⍴arg ⋄ r←⍎id
+ :Else
+     sha←⍴arg←(¯2↑1 1,⍴arg)⍴arg
+     max←0 1×sha⌈shm←⍴r←⍎id
+     r←(max⌈shm)↑r
+     r[⍳⍴arg]←arg←(max⌈sha)↑arg
+     ⍎id,'←r'
+ :EndIf

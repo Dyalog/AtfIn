@@ -1,0 +1,5 @@
+ {to}∆xfrFolder from;same;all
+⍝ Transfer all the files in 'from' to 'to' (default same)
+ :If 0=⎕NC'to' ⋄ to←from ⋄ :EndIf
+ same←to≡from
+ all←'xsf xsw'fileInfo'↓',from

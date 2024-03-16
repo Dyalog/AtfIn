@@ -1,0 +1,24 @@
+ def←∆LIBD file;n;name;⎕IO
+⍝ ⎕FLIB replacement: uses global '⍙LIBS' to store definitions
+ ⎕IO←1
+ :If 0∊⎕NC'⍙LIBS' ⋄ ⍙LIBS←0 2⍴0 ⋄ :EndIf
+⍝ arg can be a single number in which case we return the folder
+⍝ associated with the libno:
+ :If (1∊⍴n←,file)∧0∊1↑0⍴file
+     def←(⍙LIBS[;1]⍳n)⊃⍙LIBS[;2],⊂''
+ :Else
+     {}÷n←⍬⍴2 1⊃⎕VFI file ⋄ name←(+/∧\file∊⎕D,' ')↓file
+    ⍝ If the name is empty we remove the definition
+     :If 0∊⍴name
+         ⍙LIBS←(⍙LIBS[;1]≠n)⌿⍙LIBS
+     :Else
+        ⍝ File paths must be normalized
+         :If '\:'∧.≠2↑name
+             name←(∆CHDIR''),'/',name
+         :EndIf
+         :If n∊⍙LIBS[;1] ⋄ ⍙LIBS[⍙LIBS[;1]⍳n;2]←⊂name
+         :Else ⋄ ⍙LIBS⍪←n name
+         :EndIf
+        ⍝ ⍙LIBS←⍙LIBS[⍋⍙LIBS[;1];] ⍝ keep ordered?
+     :EndIf
+ :EndIf

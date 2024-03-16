@@ -1,0 +1,5 @@
+ cr←∆remdq cr;b
+⍝ Remove double quotes
+ →(1∊b←'"'=cr)↓0 ⍝ anything to look at?
+⍝ Some lines need to be looked after, are they behind lamps?
+ .

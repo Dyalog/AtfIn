@@ -1,0 +1,3 @@
+ {rec}∆writeNfile handle
+⍝ write rec to file associated with handle
+ rec ⎕NAPPEND handle 82

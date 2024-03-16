@@ -1,0 +1,9 @@
+ r←name ∆addName typestr;type;str;n
+⍝ Insert name between type and string
+ :If 1≥|≡typestr
+     (type str)←(1↑r)(1↓r←typestr)
+ :Else
+     (type str)←typestr
+ :EndIf
+ n←∆oname name
+ r←(⍕⍴r),' ',r←type,(⍕⍴n),' ',n,str

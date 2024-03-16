@@ -1,0 +1,6 @@
+ hdl←∆∆open file;tr;⎕IO
+⍝ danb 1998 open file, return handle
+ hdl←file ⎕NTIE ⎕IO←0
+⍝ file MUST exist - set translation
+ tr←⍳256 ⋄ →(⎕NC'∆xlate')↓l10 ⋄ tr←∆xlate⍳⎕AV
+l10:tr ⎕NXLATE hdl

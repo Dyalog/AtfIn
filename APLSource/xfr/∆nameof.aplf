@@ -1,0 +1,6 @@
+ n←∆nameof str;b;⎕IO
+⍝ name of object defined by string
+ ⎕IO←1 ⋄ b←str⍳' '
+ n←⍎1↓b↑str ⍝ length of name
+ n←n↑b↓str
+ n←n,':',1↑str

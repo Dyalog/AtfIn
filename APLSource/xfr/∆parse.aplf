@@ -1,0 +1,3 @@
+ parms←patn ∆parse arg;np
+ np←⎕NEW ⎕SE.Parser(patn'narg=1')
+ parms←np.Parse arg

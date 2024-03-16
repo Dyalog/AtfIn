@@ -1,0 +1,10 @@
+ tns Execute exp
+    ⍝ Execute expression including large ones
+    ⍝ tns is the target namespace. exp is the expression to execute in the target ns
+    ⍝ We first try ⍎ if that fails because of a limit error we try to do it piecemeal.
+ :Trap 10
+     tns⍎exp
+ :Else
+     :If 0∊⎕NC'bigstring' ⋄ bigstring←⎕SE.SALT.Load'tools/code/bigstring -noname' ⋄ :EndIf
+     tns bigstring.execute exp ⍝ this better work
+ :EndTrap

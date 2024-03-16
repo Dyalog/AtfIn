@@ -1,0 +1,35 @@
+ repObj←{             ⍝ String representation of object V0.25
+     ⍝ This version accounts for ⎕TC type characters
+     ⍵≡⍬:'⍬' ⋄ ⍵≡'':'''''' ⋄ ⍵≡⎕NULL:'⎕Null'
+     scal←0∊rank←+/⍴s←⍴⍵ ⋄ char←>/(simple num)←∧\~(10|⎕DR 1/⍵)∊¨6(0 2)
+     n←÷scal⍲1=≡R←⍵   ⍝ no funny objects like ⎕ORs
+     scal∧9=⎕NC'R':⍕⍵ ⍝ display refs as they are
+
+         ⍝ Reduce object to 1 item if all same elements
+     mod←(0<rank)∧(n=0)∨(5×char)<n←×/s
+     mod←mod∧as←char{0∊⍴⍵:1 ⋄ ⍵∧.≡1↑⍵}obj←,⍵ ⍝ as: all the same
+     obj←1↑⍣mod+obj   ⍝ take only 1st? (grab prototype if empty)
+     shape←mod{⍵≡,1:',' ⋄ (⍺∨1<⍴⍵)/'⍴',⍨⍕⍵}s
+     shape←shape,(encl←simple<as)⍴'⊂'
+     ⍺←0              ⍝ recursive call?
+
+         ⍝ Simple scalars and char vector≠⍴1 do not need parens
+     parens←⍺∧simple≤(0<⍴shape)∨(rank=1)∧num∨∨/(4↑⎕AV)∊⍵
+     (lp rp)←parens⍴¨'()'
+     ~simple:rp,⍨lp,shape,encl{⍺⍲'('=1↑⍵:⍵ ⋄ 1↓¯1↓⍵}1↓⊃,/' ',¨1 ∇¨obj
+
+         ⍝ Simple objects (char should account for ⎕TC chars et al.)
+     ⎕PP←17 ⍝ for numbers
+     obj←shape,num{⍺:⍵ ⋄ qu←{Q,((1+t=Q)/t←⍵),Q←''''} ⋄ ⎕ML←1 ⋄ ⎕IO←0
+         ~∨/sc←⍵∊4↑⎕AV:qu ⍵ ⍝ no special chars?
+             ⍝ If only a few chars transform the whole string into ⎕AV
+         av←{1⌽']⎕av[⎕io',(t≢,0)/'+',⍕t←,⎕AV⍳⍵}
+         ⍝34>⍴⍵:av ⍵
+             ⍝ More than a few; create a mixture of ⎕AV[...] and 'quotes'
+         c∨←7>,↑⍴¨c←sc⊂⍨c←1,1↓sc≠¯1⌽sc ⍝ that number is subjective
+         ∧/sc←∊c:av ⍵ ⍝ are the pieces small enough to be all in ⎕AV?
+         c←1,1↓sc≠¯1⌽sc
+         ∊{⍺,',',⍵}/(c/sc){⍺:av ⍵ ⋄ qu ⍵}¨c⊂⍵
+     }⍕obj
+     lp,obj,rp
+ }

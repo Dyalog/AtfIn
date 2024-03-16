@@ -1,0 +1,40 @@
+ {source}ATFOUT arg;OBJS;obj;fn;class;state;⎕IO;⎕ML;val;n;X;Pa
+⍝ arg is a string of filename possibly followed by -objects=...
+⍝ If omitted, all objects are re-constituted.
+⍝
+ ⎕ML←⎕IO←1
+ Pa←(⎕NEW ⎕SE.Parser,⊂'-objects=' 'upper').Parse arg
+ fn←OUTINIT 1⊃Pa.Arguments
+⍝ If no names explicitly chosen, transfer everything in WS.
+⍝ We need to find where the objects are to start with. We cannot assume this ns was copied in a ws and used
+⍝ from there, it could be called from Spice way down the stack in some unknown ns.
+ :If 0=⎕NC'source' ⋄ source←⍎(⍴⎕NSI)⊃⎕NSI ⋄ :EndIf
+ :If 0≡OBJS←Pa.OBJECTS
+     OBJS←'⎕CT' '⎕IO' '⎕LX' '⎕PP' '⎕PW'
+     OBJS,←source.⎕NL-2.1 3.1 4.1 ⍝ only traditional objects transferred to other systems
+ :Else
+     OBJS←{(1↓¨(⍵∊' ,')⊂⍵)~⊂''}' ',OBJS
+     'Invalid object (vars & fns only)'⎕SIGNAL 11 if~∧/(⌊source.⎕NC OBJS)∊2 3 4
+ :EndIf
+
+ :For obj class :InEach OBJS(source.⎕NC OBJS)
+⍝ Find the basic representation to recreate a variable
+     :If class=¯1 ⍝ ⎕var ?
+         :If '⎕'∊1↑obj
+             val←source⍎obj
+         :Else
+             ⎕←obj,' skipped.' ⋄ :Continue
+         :EndIf
+         val←obj makeVal val
+     :ElseIf class=2.1 ⍝ var
+         val←obj makeVal source⍎obj
+     :Else ⍝ must be a fn/op
+         val←'F',obj,' ⎕FX ',⎕SE.Dyalog.Utils.repObj source.⎕NR obj
+     :EndIf
+⍝ Append representation in antiquated 80 column card format a la IBM
+     X←'X'↑⍨-n←⌈(⍬⍴⍴val)÷71 ⋄ val←(X,n 78↑n 71⍴(n×71)↑val),n 3⍴⎕AV[185 4 3]
+     val ⎕NAPPEND fn,82
+ :EndFor
+
+ ⎕←'Job completed. File size=',⍕⎕NSIZE fn
+ ⎕NUNTIE fn

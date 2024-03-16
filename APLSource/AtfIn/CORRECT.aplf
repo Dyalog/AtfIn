@@ -1,0 +1,4 @@
+ code←CORRECT code;by;c
+ :For c by :In 'Ó←' 'Ú→' 'Ã↑' 'È↓' 'Í⌊' 'Ð∇'
+     ((code=c)/code)←by
+ :EndFor

@@ -1,0 +1,3 @@
+ r←∆VI y
+⍝ Emulate ⎕VI under APLX
+ r←⎕IO⊃⎕VFI y

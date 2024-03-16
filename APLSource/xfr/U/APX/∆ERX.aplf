@@ -1,0 +1,9 @@
+ r←∆ERX label ⍝ ⎕ERX in APLX
+ r←⎕TRAP ⍝ this is not a label
+ :If 0∊1↑0⍴label ⍝ a number?
+     :If 0∊label ⋄ ⎕TRAP←0⍴⎕TRAP
+     :Else ⋄ ⎕TRAP←0 'E'('→',⍕label)
+     :EndIf
+ :Else
+     ⎕TRAP←label ⍝ assume valid ⎕TRAP argument
+ :EndIf

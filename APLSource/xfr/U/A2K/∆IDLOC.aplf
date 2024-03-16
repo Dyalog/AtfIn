@@ -1,0 +1,6 @@
+ state←∆IDLOC objlist
+⍝ Return a numeric matrix of class codes with one row for each object
+⍝ in objlist and one column for each stack level (most local on left).
+
+ state←⎕STATE¨↓⍣(1≡≡objlist)⌷objlist
+⍝ more...

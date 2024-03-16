@@ -1,0 +1,9 @@
+ r←env ∆CALL args;⎕USING
+    ⍝ Simulate ⎕CALL in APLX
+ 'Only .Net supported'⎕SIGNAL 11/⍨'.net'≢env
+ ⎕USING←''
+ :If 1=≡,args
+     r←⍎args
+ :Else
+     r←(⍎1⊃args)2⊃args
+ :EndIf

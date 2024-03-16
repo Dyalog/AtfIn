@@ -1,0 +1,26 @@
+ tr←la SetTR(fn bs);apl;i;⎕IO;n
+     ⍝ Find translation to apply from looking at the file if no APL specified.
+ ⎕IO←0
+ :If 0≡la.APL
+        ⍝ Find signature: read 1st few 100 bytes
+     n←⍴i←⎕NREAD fn 83,2↑1+bs×21
+     :Select {(>/⍵)⌽⍵}∪i[bs×⍳⌈n÷bs]~42 92 180 ⍝ remove *s
+     :CaseList (⊂i),,¨i←32 88 ⋄ apl←'APL2PC'
+     :CaseList (⊂i),,¨i←¯25 64 ⋄ apl←'APL2MF'
+     :CaseList (⊂i),,¨i←4 88 ⋄ apl←'DYALOG'
+     :Else ⋄ 'unknown APL'⎕SIGNAL 11
+     :EndSelect
+        ⍝ Reset file read pointer to beginning
+     {}⎕NREAD fn 83 0 0
+ :Else ⍝ ensure uppercase
+     apl←ToUpper la.APL
+ :EndIf
+ tr←Translate
+ :If apl≡'APL2MF'
+     ⍝ There should be a special table for APL2MF here but fn <CORRECT> does the trick instead
+     tr←VSAPL
+ :EndIf
+     ⍝ Reverse underscored letters and lowercase letters?
+⍝      :If la.FLIPLU=(⊂apl)∊'APL2PC' 'APL2MF' ⍝ 'flip' reversed for this APL
+⍝          tr[i]←26⌽tr[i←⎕AV⍳LC,⎕Á]
+⍝      :EndIf

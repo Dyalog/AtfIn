@@ -1,0 +1,7 @@
+ value←∆createEnc str;n;len
+⍝ Create vector of enclosures from description
+ value←⍬
+ :While ×⍴str
+     n←str⍳' ' ⋄ len←⍎n↑str ⋄ value←value,4⌷∆createObj len↑n↓str
+     str←(len+n)↓str
+ :EndWhile

@@ -1,0 +1,2 @@
+ Z←∆B  ⍝ Emulate APLX ⎕B
+ Z←⎕UCS 8

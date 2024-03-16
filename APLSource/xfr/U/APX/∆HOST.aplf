@@ -1,0 +1,8 @@
+ r←{timeout}∆HOST string
+    ⍝ ⎕HOST in APLX
+    ⍝ timeout feature is not enabled
+ :If ''≡string ⍝ return OS type
+     r←('WLMA'⍳1↑⎕IO⊃'.'⎕WG'aplversion')⊃'WINDOWS' 'LINUX' 'MACOS' 'AIX' '?'
+ :Else
+     r←1↓↑,/(⎕UCS 13),¨⎕SH string~'↑↓' ⍝ always on client
+ :EndIf

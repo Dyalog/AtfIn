@@ -1,0 +1,11 @@
+ {r}←data ∆NAPPEND arg;tieno;type;conv
+    ⍝ Emulate APLX ⎕NAPPEND
+
+ (tieno conv)←arg,(≢arg)↓0 0
+ :If conv=0
+     data ⎕NAPPEND tieno
+ :Else
+     type←n_type conv
+     data←data n_data conv
+     data ⎕NAPPEND tieno type
+ :EndIf

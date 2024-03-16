@@ -1,0 +1,40 @@
+ fn←∆fixrep fn;⎕IO;b;b1;d;dlm;mat;t;fb;c;fix
+⍝ DanB 1990 (c) fix ⎕vars+⎕fns names
+⍝ It relies on table '∆equivalence' which contains replacements
+⍝ for various APLs
+ :If 0=⎕NC'dYw' ⋄ :OrIf ~dYw ⍝ DYW to DYW? then skip this
+     ⎕IO←0 ⋄ c←⎕AV[⎕IO+3]
+     fn←∆bin fn ⍝ add    {} brackets
+     →(mat←2=⍴⍴fn)↓l10
+     fn←1↓,c,fn
+l10: →(d←3×'∇'∊fn[(fn=' ')⍳0])↓l12 ⍝ any decorators?
+    ⍝ After the last ∇ there may be info like timestamps
+     t←-b⊥b←b∧0∊b←'∇'≠fn ⋄ t×←~∨/'}''"'∊t↑fn
+     fn←t↓fn ⍝ does not tolerate extra chars
+    ⍝ Some versions split the header because of comments in it
+l12: b←c=fn ⍝ merge ;locals lines
+     t←1+d+b1←b⍳1 ⋄ →(b1=⍴b)⍴l20 ⍝ more than 1 line?
+     t←t++/∧\' '=t↓fn ⋄ →(t≥⍴fn)⍴l20 ⋄ →(';'=fn[t])↓l20 ⍝ 1st char ';'?
+⍝ OK, line[1] starts with a ';', merge it with [0]
+     b←≠\fb∨<\(∨\b)∧(b>fb←<\b)∨fn∊'⍝∇'
+     fn[b/⍳⍴b]←(t-b1)⌽b/fn
+l20: →(⎕NC'∆⍙CodT')↓end
+     b←'**NOTR**' ⍝ 'no translate' signature
+     →(1∊t←b⍷fn)↓l30 ⍝ should we translate this fn?
+⍝ remove the occurence of the request
+     dlm←t⍳1 ⋄ fn←(dlm↑fn),(dlm+⍴b)↓fn ⋄ →end
+⍝
+⍝ translation requested. The translation string is in '∆⍙CodT'
+⍝ Empty lines: it is assumed all versions can handle them
+⍝ (Sharp starts at r19) otherwise we have to introduce them.
+
+⍝ For APL+ code we need to take into account "strings"
+l30: :If APLtype∊3 4 ⍝ is this APL2000 or APLX?
+         fix←{~'"'∊⍵:⍵
+             c,⍨U.A2K.bigstring.fixQuote ⍵↓⍨-⍴c←⍵/⍨∨\('⍝'=⍵)>≠\U.A2K.bigstring.find1stQuotes ⍵}
+         fn←1↓⊃,/CR,¨fix¨cut CR,fn
+     :EndIf
+     fn←∆⍙CodT ∆txtrepl fn
+end: →mat↓0
+     fn←⎕FMT fn
+ :EndIf

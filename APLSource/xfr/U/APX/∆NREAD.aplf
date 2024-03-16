@@ -1,0 +1,16 @@
+ r←∆NREAD arg;startbyte;count;conv;tieno;type;ix
+    ⍝ Emulate APLX ⎕NREAD
+ ⎕IO←1
+ (tieno conv count startbyte)←arg,(≢arg)↓0 0 ¯1 ⍬
+ type←n_type conv
+ :If count≠¯1
+     r←⎕NREAD tieno type count,startbyte
+ :Else ⍝ read to end
+     'Read to end not supported in Dyalog APL (yet)'⎕SIGNAL 11
+ :EndIf
+
+ :Select conv
+ :Case 0 ⋄ r←∆AV[1+⎕UCS r]
+ :Case 5 ⋄ r←'UTF-8'⎕UCS ⎕UCS r
+ :Case 8 ⋄ r←'UTF-16'⎕UCS ⎕UCS r
+ :EndSelect

@@ -1,0 +1,1 @@
+ ToLower←{⎕IO←0 ⋄ b←26>i←⎕A⍳s←,⍵ ⋄ (b/s)←LC[b/i] ⋄ s}

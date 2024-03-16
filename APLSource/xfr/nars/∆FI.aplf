@@ -1,0 +1,5 @@
+ r←∆FI str;b
+⍝ Fix number AFTER verifying its validity
+ ((str='-')/str)←'¯'
+ (b r)←⎕VFI str
+ ⎕SIGNAL 11/⍨0∊b

@@ -1,0 +1,6 @@
+ r←∆LIB path;⎕ML;wild;⎕IO ⍝ Emulate APLX ⎕LIB
+⍝ Extension: allows filtering of terminal node, e.g. ∆lib 'c:\temp\*.csv'
+ ⎕ML←1 ⋄ ⎕IO←1
+ wild←'*'∊path
+ r←↑↑(⎕NINFO ⎕OPT 1)path,((wild∨(¯1↑path)∊'/\')↓'/'),wild↓'*'
+ r←(1+(≢path)-⌊/(⌽path)⍳'/\')↓[2]r

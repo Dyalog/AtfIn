@@ -1,0 +1,2 @@
+ r←∆FI y ⍝ Emulate ⎕FI under APLX
+ r←(1+⎕IO)⊃⎕VFI y

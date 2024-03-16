@@ -1,0 +1,13 @@
+ rep←∆FX rep;⎕IO;l1;s
+⍝ danb 2003 change representation
+ →(2∊⍴⍴rep)⍴0 ⍝ matrices are fine
+⍝ Dyalog APL won't accept a vector representation w/o line #s
+⍝ but it will accept inline fn definition (like +/)
+⍝ If the 1st line doesn't have any valid char name then we
+⍝ assume it is an inline fn:
+ ⎕IO←0 ⋄ l1←(s←rep⍳CR)↑rep←rep~1↑⎕AV ⍝ remove nulls from defn (some APLs have a bug)
+ →(¯1∨.≠⎕NC(s,1)⍴l1)↓0
+⍝ Normal fn, do we need any line numbers?
+ →0/⍨1∊' ∇'⍷6↑l1
+⍝ Line #s are not there - we cut each line instead
+ rep←cut CR,rep ⍝ a la ⎕NR

@@ -1,0 +1,86 @@
+ {Target}ATFIN arg;Filename;POS;TXT;NM;DUFF;Filenum;Block;SCRIPT;⎕ML;more;TR;t;Pa;sc;len;BlockSizes;GotObjects
+     ⍝ Transfer in from an ATF file produced by e.g. )OUT on IBM
+     ⍝ All system variables are saved at the end.
+     ⍝ All system variable changes saved in QuadThings
+     ⍝ Anything that won't fix is saved in PROBLEMS
+     ⍝
+ ⎕IO←1 ⋄ ⎕ML←1                               ⍝ DO NOT CHANGE ⎕IO!
+ t←1↓t,ToLower t←∊' ',¨APLsCovered
+ Pa←(⎕NEW ⎕SE.Parser,⊂('-alphabets:aAa -apl=',t)'upper').Parse arg
+ Filename←(1⊃Pa.Arguments){⍺,(~'.'∊⍺)/⍵}'.atf'⍝ append extension if none there
+ BlockSizes←⍬
+
+Try:
+     ⍝ We try to determine the width of the 'records' - should be a multiple of 80 to 84
+ (Filenum BlockSizes)←Pa OPEN(Filename BlockSizes)
+ Block←(0,1↑BlockSizes)⍴''
+ SCRIPT←0 72⍴PROBLEMS←QuadThings←''
+ :If 0=⎕NC'Target' ⋄ Target←# ⋄ :EndIf
+ CTarget←(⍕Target),'.'                       ⍝ where do we have to define these objects
+ 'Cannot define objects in this namespace'⎕SIGNAL 11 if Target≡⎕THIS
+ ⎕WSID←{((0∊b)×-1+⊥⍨b←'.'≠⍵)↓⍵}Filename      ⍝ change ws here to avoid overwriting the original
+ more←1
+ GotObjects←0
+ :While more
+     :If (POS←⌊/SCRIPT[;1]⍳'Xx')≤⊃⍴SCRIPT    ⍝ Got some to be getting on with
+         TXT←,0 1↓SCRIPT[⍳POS;]              ⍝ Extract block of text (drop X column)
+         SCRIPT←(POS,0)↓SCRIPT               ⍝ And throw away from script
+         :Select ⍬⍴TXT                       ⍝ What are we dealing with?
+         :CaseList 'ACNacn'   ⍝ Variable
+             :If '⎕'=TXT[2]                  ⍝ If it is a system object
+                 QuadThings,←⊂TXT            ⍝ then save it until later
+             :Else
+                 CHARFN TXT
+             :EndIf
+         :CaseList 'fF'                      ⍝ Function; it may use ⎕FX or not
+             NM←1↓(t←TXT⍳' ')↑TXT ⍝ What's its name?
+             :If ∨/'⎕fx'⍷⎕SE.SALTUtils.lCase TXT ⍝←CORRECT TXT ⍝ CORRECT does not seem to be needed
+                 t←¯1+TXT⍳'⎕'                    ⍝ where does ⎕FX start
+                 TXT←t↓TXT                       ⍝ Throw away any left arg of ⎕FX
+                 :If ⍱/0 2∊10|⎕DR⍎CTarget,TXT    ⍝ Execute it - check for error
+                     ⎕←'   Function: ',NM,'   *** FAILED ***' ⍝ Tell user about the problem
+                     PROBLEMS,←⊂TXT              ⍝ and save copy of text
+                 :Else
+                     ⎕←'   Function: ',NM
+                 :EndIf
+             :Else ⍝ is RANK, SHAPE, CODE
+                 len←55⌊⍴TXT←(1+⍴NM)↓TXT
+                 sc←⍴t←(∧\TXT[⍳len]∊' ',⎕D)/len↑TXT  ⍝ separate Rank/Shape from code
+                 t←2⊃⎕VFI t
+                 :If (1↑t)≠¯1+⍴t
+                 :OrIf ⍱/0 2∊10|⎕DR Target.⎕FX(1↓t)⍴sc↓TXT,'    '
+                     ⎕←'   Function: ',NM,'   *** FAILED ***'
+                     PROBLEMS,←⊂TXT              ⍝ and save copy of text
+                 :Else
+                     ⎕←'   Function: ',NM
+                 :EndIf
+             :EndIf
+         :Else
+             -⎕←'Invalid TYPE or format in file'
+         :EndSelect
+         GotObjects←1
+     :Else
+             ⍝ We don't have a block. Try to get next block from file. If sucessful continue
+             ⍝ processing, otherwise stop as we have reached end of file. Ignore * lines.
+         more←~0∊⍴SCRIPT⍪←{(⍵[;1]≠'*')⌿⍵}(Pa.ALPHABETS GETNEXTBLOCK 500)[;⍳72]
+     :EndIf
+ :EndWhile                                   ⍝ Repeat for next block
+
+ ⎕NUNTIE Filenum
+
+ :If GotObjects<1<⍴BlockSizes
+     ⎕←'Nothing was defined using block size: ',⍕1↑BlockSizes
+     BlockSizes←1↓BlockSizes
+     →Try
+ :EndIf
+
+ CHARFN¨Target.QuadThings←QuadThings
+ ⎕←'SUCCESS:'
+ :If '*'∊4⍴⎕STACK
+     ⎕←'   ⎕EX ''⍙⍙'' ⍝ to remove the transfer objects'
+ :EndIf
+ ⎕←'      ⎕SAVE ''',((⊢↓⍨0-'.'⍳⍨⌽)Filename),''' ⍝ to save as Dyalog Workspace'
+ ⎕←'      ↑QuadThings ⍝ to see the systems variables modified'
+ →(0∊⍴PROBLEMS)↑0
+ ⎕←'      ↑PROBLEMS ⍝ to see unfixed objects'
+ Target.PROBLEMS←PROBLEMS

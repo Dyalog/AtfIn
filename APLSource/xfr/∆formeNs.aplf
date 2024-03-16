@@ -1,0 +1,35 @@
+ (type r)←∆formeNs obj;tmp;name;ok;sysvars
+⍝ Returns the flattened representation of a Namespace (class 9.x)
+⍝ 'type' is S for sourced space, P for packaged (namespace), C for char (cannot be done)
+
+ ok←9.1 9.4 9.5 ⍝ only those accepted, other defined as their ⎕DF
+ :If ok∊⍨⎕NC⊂'obj'
+     :Trap 16 11 ⍝ remove shape for sourced nss
+         (type r)←'S',1↓∆formeVar ⎕SRC obj
+         r←{v↓⍨' '⍳⍨v←2↓⍵}r ⍝ no ⍴ info
+     :Else
+    ⍝ It doesn't matter if obj is a NS or ⎕OR 'NS'
+         :If 1≡≡obj ⋄ 'tmp'⎕NS obj ⋄ obj←tmp ⋄ :EndIf ⍝ turn obj into a NS if ⎕OR
+         sysvars←'⎕io' '⎕ml' '⎕wx'∪(NSSysVars[2;]≢¨obj⍎⍕r)/r←NSSysVars[1;]
+         r←⍴type←'P'
+         :For name :In sysvars,obj{l/⍨0<⍺.⎕NC l←⍺.⎕NL ⍵}-2,ok
+             :If ~isOr tmp←obj⍎name ⍝ cover xfr case
+             :AndIf (⊂tmp)∊nsDone
+                 r←r,name ∆addName'C',2⊃∆formeVar⍕'*** recursive'tmp':'name
+             :Else
+                 :Trap 6
+                     :If isNs tmp ⋄ nsDone,←tmp ⋄ :EndIf
+                     r←r,name ∆formeVar tmp
+                 :EndTrap
+             :EndIf
+         :EndFor
+         :For name :In obj.⎕NL-3 4
+             r←r,name ∆addName'F',1↓∆formeVar obj.⎕CR name
+         :EndFor
+     :EndTrap
+ :Else
+     type←'Instance'
+     :Trap 6 ⋄ type←obj.Type ⋄ :EndTrap
+     ⎕←'**'type obj'skipped'
+     r←2⊃∆formeVar'*** ',type,': ',⍕obj ⋄ type←'C'
+ :EndIf

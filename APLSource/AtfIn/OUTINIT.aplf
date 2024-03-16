@@ -1,0 +1,15 @@
+ num←OUTINIT Filename
+⍝ Create/rewrite file
+ Filename←(-⊥⍨' '=Filename)↓Filename
+ Filename←Filename{⍺,(⍵≢(-⍴⍵)↑⍺)/⍵}'.atf'
+ :Trap 22
+     num←Filename ⎕NCREATE 0
+ :Else
+     :Trap 0
+         num←0 ⎕NRESIZE Filename ⎕NTIE 0
+     :Else
+         'Cannot create file ',Filename,' :',⎕EM ⎕EN
+         →
+     :EndTrap
+ :EndTrap
+ Translate ⎕NXLATE num

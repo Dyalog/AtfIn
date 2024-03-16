@@ -1,0 +1,17 @@
+ (Filenum BS)←Pa OPEN(File BlockSizes);⎕TRAP;EM;sz;t;TR
+ ⎕←'PROCESSING "',File,'" (',(⍕sz←⎕NSIZE Filenum←File ⎕NTIE 0),' bytes):'
+ :If 0∊⍴BlockSizes
+     :If 0∊⍴t←{(0=s|⍵)/s←79+⍳5}sz
+         ⎕←'Unable to determine block size, trying with ',⍕BS←,80
+     :Else ⍝ if more than 1 favor 82 then 80
+         :If 1≠⍴t
+             ⎕←'Ambiguous block sizes (',(⍕t),'), attempting:',1↑t←t[⍒2 1+.×82 80∘.=t]
+         :EndIf
+         BS←t
+     :EndIf
+ :Else
+     ⎕←'Attempting block size: ',⍕1↑BlockSizes
+     BS←BlockSizes
+ :EndIf
+ TR←Pa SetTR Filenum,1↑BS               ⍝ Set up translation
+ TR ⎕NXLATE Filenum

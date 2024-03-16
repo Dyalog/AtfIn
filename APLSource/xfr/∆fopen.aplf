@@ -1,0 +1,20 @@
+ z←{fna}∆fopen tno;i;⎕IO;cfn
+⍝ Share tie the file name <fna> if it exists; otherwise, create it.
+⍝ <tno> specifies the tie number and optional passnumber.
+⍝ The lowest available tie number is chosen automatically if 0.
+⍝ The result is the actual tie number of the file.
+ ⎕IO←0 ⋄ cfn←1⌽'  ',fna←'"'~⍨rlb∘⌽⍣2⊢fna
+ →(⍴z←(∨/cfn⍷' ',⎕FNAMES,' ')/⎕FNUMS)⍴0 ⍝ check if already tied
+⍝ Set trap for 'file name' error
+ :Trap 22
+    ⍝ Attempt to tie the file
+     z←fna ⎕FSTIE tno
+ :Else
+⍝ file does not exist, create it; exit if no passnumber complications
+     i←'**NOTR**' ⍝ do not modify this fn
+     z←fna ⎕FCREATE 1↑tno
+     :If 0≠i←1↑1↓tno
+        ⍝ if a passnumber was given, activate it
+         (1 3⍴⎕AI[0],¯1,i)⎕FSTAC z ⋄ ⎕FUNTIE z ⋄ fna ⎕FSTIE tno
+     :EndIf
+ :EndTrap

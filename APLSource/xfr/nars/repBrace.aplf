@@ -1,0 +1,4 @@
+ repBrace←{ ⍝ replace {code} by proper character
+     (1↑⍴MAP)>i←MAP[;0]∘⍳⊂m←⍵.Match:MAP[i;1]
+     {0::'?' ⋄ ⎕UCS DecHex ⍵}2↓m~'{}'
+ }

@@ -1,0 +1,25 @@
+ CHARFN TXT;⎕TRAP;RANK;SHAPE;DATA;i;n;TYPE;NM
+     ⍝ TXT is the transfer file string that represents one variable.
+     ⍝ This function creates the variable in the workspace.
+ →0 if' '∧.=TXT ⍝ cover null case
+ :Trap 0
+     i←{⎕IO←1 ⋄ ⍺⍳⍵} ⍝ because we can't trust ⎕IO to be 1
+     NM←1↓¯1↓((TXT∊'← ')i 1)↑TXT  ⍝ What's its name?
+     :If 'Aa'∊⍨TYPE←1↑TXT
+         Target Execute 1↓TXT
+     :Else
+         DATA←(TXT i' ')↓TXT
+         SHAPE←'⍬⍴' ⋄ RANK←⍎(n←DATA i' ')↑DATA
+         DATA←n↓DATA
+         :If 0<RANK
+             n←RANK i⍨+\' '=DATA
+             SHAPE←'⍴',⍨n↑DATA
+             DATA←n↓DATA
+         :EndIf
+         Target Execute NM,'←',SHAPE,('NncC'⍳TYPE)⊃2/(DATA,',⍬')((⍕⎕THIS),'.DATA')
+     :EndIf
+     ⎕←'   Variable: ',NM
+ :Else
+     ⎕←'   Variable: ',NM,'   *** FAILED ***'
+     PROBLEMS,←⊂('(',1↑TXT),') ',1↓TXT
+ :EndTrap

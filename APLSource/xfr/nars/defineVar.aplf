@@ -1,0 +1,23 @@
+ r←Tns defineVar env;name;value;n;shape;rank;type
+⍝ Define a variable from a ⎕S hit
+ name←Xlate env.(Block[Offsets[1]+⍳Lengths[1]])
+ :If '⎕'∊name  ⍝ skip unknown ⎕VARS
+     →0↓⍨r←'⎕ct' '⎕io' '⎕lx' '⎕pp' '⎕pw' '⎕rl'∊⍨⊂name
+ :EndIf
+ value←Xlate env.(Block[Offsets[2]+⍳Lengths[2]])
+ :If r←':'∊1↑value
+     n←(⍎1↓value)⊃GLOBALS
+     {Tns⍎name,'←⍵'}n
+ :Else
+     n←1⊃⎕VFI{⍵/⍨∧\⍵∊⎕D,' '}1↓value ⋄ type←1↑value
+     shape←(rank←1⊃n)⍴2↓n
+     value←((rank+2)<+\' '=value)/value
+     :If type≠'C'   ⍝ numeric, change - by ¯
+         value[n/⍳⍴n←'-'=value]←'¯'
+     :EndIf
+     :Trap r←0
+         Tns.⎕EX name ⋄ Tns⍎name,'←',value ⋄ r←1
+     :Else
+         ⎕←'** Unable to define "',name,'": ',1↓⎕IO⊃⎕DM
+     :EndTrap
+ :EndIf

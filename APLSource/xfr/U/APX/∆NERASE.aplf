@@ -1,0 +1,8 @@
+ {file}∆NERASE tieno
+    ⍝ Emulate APLX ⎕NERASE
+ :If 900⌶⍬ ⍝ monadic case?
+     :If 0=tieno←(⎕NNUMS,0)[(~∘' '¨↓⎕NNAMES)⍳⊂file←tieno] ⍝ tied already?
+         tieno←file ⎕NTIE 0
+     :EndIf
+ :EndIf
+ file ⎕NERASE tieno

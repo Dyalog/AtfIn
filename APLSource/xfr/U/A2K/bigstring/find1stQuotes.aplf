@@ -1,0 +1,12 @@
+ txt←find1stQuotes exp;q;cm;n;Q
+⍝ Find the 1st quote of each string (' or ") in the expression
+ cm←exp∊'''"' ⋄ q←0/Q←'"'=cm/exp ⍝ work with the quotes only
+ :While 0<n←⍴Q
+     :If =/2⍴Q ⋄ n←2×+/∧\=/(2,⍨⌊0.5×n)⍴Q ⍝ grab all first pairs
+         q,←n⍴1 ⋄ Q←n↓Q
+     :EndIf
+ :Until 0=⍴Q
+ n←0⍳⍨≠\Q=1⍴Q ⍝ find matching quote
+ q,←(-(⍴Q)<n)↓1⌽n↑1 1 ⋄ Q←n↓Q ⍝ account for non matching final quote
+ :OrIf 0
+ txt←cm\q

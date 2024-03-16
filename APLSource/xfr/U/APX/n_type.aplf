@@ -1,0 +1,10 @@
+ type←n_type conv;⎕IO;ix
+    ⍝ Convert APLX native file conversion codes
+    ⍝ conv 325 and 643 (=7) not suppported
+ ⎕IO←1
+ :If conv∊11 82{⍺,⍵,-⍵}163 323 645
+     type←|conv
+ :Else
+     type←(10⌊1+|conv)⊃80 11 323 645 80 80 0 0 80 0
+     'Unsupported conversion type'⎕SIGNAL type↓11
+ :EndIf

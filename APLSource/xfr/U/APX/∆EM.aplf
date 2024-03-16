@@ -1,0 +1,2 @@
+ Z←∆EM;⎕ML ⍝ Emulate APLX ⎕EM
+ ⎕ML←1 ⋄ Z←↑⎕DM

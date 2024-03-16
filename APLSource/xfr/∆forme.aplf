@@ -1,0 +1,18 @@
+ W99←src ∆forme obJ;⎕PP;src
+⍝ DanB 1990 (c) serialize object in source namespace
+⍝ Rewritten 2006 for classes
+⍝ Each object is laid into a series of bytes with a code in [⎕IO]:
+⍝ F Function/operator, R ⎕oR 'fn', N Numeric, C Character, I unIcode (Intl'), E Enclosed, M Mixed
+⍝ Q=⎕or P: non sourced namespace (Package), T=⎕or S: Sourced (ns/cLass/interface), U nUll, ? unknown
+
+ ⎕PP←17  ⍝ 16 is maximum for most APLs
+ :Select {'⎕'∊⍵:2 ⋄ ''⍴src.⎕NC ⍵}obJ
+ :CaseList 9 2 ⍝ normal vars
+     W99←obJ ∆formeVar src⍎obJ ⍝ this will fail if name is invalid
+ :CaseList 3 4 ⍝ fn/op
+     W99←obJ ∆addName'F',1↓∆formeVar{0∊⍴⍵:'⍫' ⋄ ⍵}src.⎕VR obJ ⍝ locked fns won't make it
+ :Case 0
+     W99←obJ ∆addName'?'
+ :Else ⍝ unknown
+     ('object ',obJ,' is invalid')⎕SIGNAL 11
+ :EndSelect

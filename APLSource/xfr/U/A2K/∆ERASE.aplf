@@ -1,0 +1,4 @@
+ n_←∆ERASE n_;⎕ML;t
+⍝ Simulate ⎕ERASE
+ ⎕ML←3 ⋄ t←⍎⎕IO⊃⎕NSI
+ n_←n_⌿⍨~t.⎕EX n_←0 1↓↑(n_≠' ')⊂n_←,' ',n_

@@ -1,0 +1,136 @@
+ msg←{ns}∆xfrfrom ArG;bUf;inWs;rEf;tIE;∆xlate;∆∆readBuf;NaM;dYw;AllSrcs;Tns;APLtype;cpt;A;name;∆⍙CodT;count;t;m;infile;Fmt;to
+⍝ DanB 2001 define objects in host file.
+⍝ The original code was compiled without labels and →lineno from Logos under SAM.
+⍝ Started rewriting using labels in 2012, ctrl structures in 2013. Cleaned a bit more in 2014.
+⍝ ArG is a string with the source filename and possible switches:
+⍝ / is shown to be the switch delimiter but it is changed on line 16.
+⍝ /trans=(0|1|2)         is level of code translation to occur (def 0)
+⍝ /apl=(SAM|SAX|DYW|A2K|AP2) source APL; ⎕av[positions]
+⍝ /file[=]               target APL file
+⍝ /range=start[,end]     component range affected
+⍝ /replace               if objects are to be replaced (def NO)
+⍝ /noam                  NO access matrix reset
+⍝ /objs=                 def ALL (fns=ops)
+⍝ /list                  only list items that would be brought in
+⍝ /q                     quiet mode - mo messages displayed
+⍝ See documentation for the format of the file
+ bUf←'/-'Repl'/q /apl= /file[=] /replace /range= /noam /objs= /trans[=]0 1 2 /list /debug'
+ A←bUf ∆parse ArG
+ ⎕←((~A.q),⍴rEf)⍴rEf←'* XFR version ',⍕∆version
+⍝ ns is the namespace to work with, default to caller
+ :If 0=⎕NC'ns' ⋄ ns←⎕IO⊃⎕RSI ⋄ :EndIf
+ infile←⎕IO⊃A.Arguments
+
+⍝ all the switches should be defined now - validate them:
+ A.trans←FixInt⍕A.trans ⍝ default is OFF (0)
+ tIE←⍬
+ :If ~inWs←0≡A.file ⍝   --- File import preparation ---
+    ⍝ Are we supplying a tie number?
+     :If ∧/A.file∊⎕D ⋄ tIE←FixInt A.file
+     :Else
+         :If A.file≡1 ⍝ should we use the same filename?
+             A.file←(∧\tIE≠'.')/tIE←(-tIE⊥tIE←~infile∊':/\')↑infile
+         :EndIf       ⍝ else Filename supplied
+         tIE←A.file ∆fopen 1+⌈/⎕FNUMS,¯1+⌊100×∆version
+     :EndIf
+     A.range←A.range{0≡⍺:⍵,⍨1,⌊/⍬ ⋄ ⍵,⍨0 1+2⍴FixInt ⍺}2↑⎕FSIZE tIE
+ :EndIf
+
+ msg←'*** cannot save in "xfr" namespace'
+ →(inWs∧⎕THIS≡ns)/0 ⍝ we cannot save into this namespace
+⍝ Is this a file extention? then warn user if -file not supplied
+ t←⎕FMT'** Warning: -file switch and extension conflict'
+ ⎕←(A.q<inWs=(¯1↑infile)∊'fF')⌿t
+ A.objs←{⎕ML←3 ⋄ ⍵⊂⍨~⍵∊' ,'}A.objs~0 ⍝ cut the names
+
+ AllSrcs←2 6 3⍴'SAM SAX DYW A2K APX AP2 sam sax dyw a2k apx ap2'~' '
+ msg←'*** unknown APL'
+ :If 0≢A.apl ⍝ are we told which APL this is?
+     →(1∊NaM←∨⌿AllSrcs∧.=3↑A.apl)↓0 ⍝ then it must be one of these
+ :Else       ⍝ The source APL hasn't been told, use the extension to guess
+     rEf←(2,0.5×⍴t)⍴t←'mudspiMUDSPI'
+     →(∨/NaM←∨⌿rEf∊1↑2↓(∨\'.'=t)/t←¯4↑infile)↓0
+ :EndIf
+
+⍝ Find the translation AV
+ :If ~dYw←2=APLtype←t←-⎕IO-NaM⍳1  ⍝ no ⎕av mapping or translation for Dyalog
+     ∆xlate←⎕AV[⎕IO+,NaM⌿∆Xs]
+     Tns←U.⍎,NaM⌿AllSrcs[⎕IO;;]   ⍝ translate table to be put in ws below
+
+     :If ×A.trans  ⍝       --- Prepare translation ---
+    ⍝ Translation requested. Let's see from which APL this came from
+    ⍝ and if it's something we can translate:
+         NaM←':','{}SAPLDYWA2KAPXAP2'[(NaM/2 2 6 9 12 15)+⍳NaM/4 4 3 3 3 3]
+     :AndIf ∨/rEf←∨\NaM⍷∆equivalence  ⍝ is this a known APL?
+         bUf←(⍴NaM)↓rEf/∆equivalence  ⍝ IMPORTANT: 'bUf' starts with a CR
+        ⍝ The CR is a delimiter - no spaces allowed
+         bUf←(~∨\(CR,':')⍷bUf)/bUf ⍝ all the replacements
+        ⍝ Cleanup: remove double CRs and replace CRs by %
+         rEf←CR=∆⍙CodT←(NaM⍲1⌽NaM←CR=bUf)/bUf
+         ∆⍙CodT[rEf/⍳⍴rEf]←'%'
+        ⍝ If /trans=2 we will change ⎕av[refs] by ∆AV[refs] and add utilities in a #.ns
+         ∆⍙CodT←∆⍙CodT,(A.trans=2)/'%⎕av[*%∆AV['
+        ⍝ Some characters could not be represented in other APLs. All we know
+        ⍝ is their ⎕av position. We find them here.
+         bUf←('"'=∆⍙CodT)/≠\'%'=∆⍙CodT ⍝ which side are they (in/out?)
+         :While 1∊rEf←'"'=∆⍙CodT ⋄ rEf←0 1-⎕IO-2↑rEf/⍳⍴rEf
+             NaM←⍎(1+1↑rEf)↓(¯1+1↓rEf)↑∆⍙CodT ⍝ the original character
+             NaM←1↑(NaM+256×1↑bUf)↓⎕AV,∆xlate
+             ∆⍙CodT←((1↑rEf)↑∆⍙CodT),NaM,(1↓rEf)↓∆⍙CodT
+             bUf←2↓bUf
+         :EndWhile
+     :EndIf
+ :EndIf
+
+ rEf←∆∆open infile  ⍝ open import file
+ count←⍴msg←''      ⍝ gather messages here
+ Fmt←{0∊n←⍴⍵:⍺ ⋄ '*'∊1↑⍵:⍺,⍵,CR  ⍝ empty: no change;  *** message: add CR; otherwise format
+     w←4{⍺×⌈⍺÷⍨⍵+1}n ⋄ n≤d←⎕PW-⊥⍨CR≠⍺:⍺,(w⌊d)↑⍵ ⋄ ⍺,CR,w↑⍵} ⍝ nicely format text
+
+⍝                --------- objects are defined in this section ------------
+⍝   if /list has been supplied only those that would be (re)defined
+⍝   will have their name displayed.
+⍝   if /replace has NOT been supplied then a message will appear
+⍝   for all those that exist
+
+ :While 0<⍴bUf←∆∆read rEf
+    ⍝ Screen objects here
+     A.q←'⎕'=¯1↑name←¯2↓NaM←∆nameof bUf ⍝ is this a ⎕?
+     :If 0∊⍴A.objs
+     :OrIf (⊂name)∊A.objs
+
+         :If ~inWs∨A.q  ⍝ ------- File import -------
+            ⍝ This object is either new, allowed replaced or to be put on file
+             (t m)←bUf ∆infile tIE,A.replace,A.range,A.noam,A.list,⎕IO⊃⌽⎕VFI 3↓name
+             count+←t
+             msg Fmt←m
+
+         :Else          ⍝ ------- Ws   import -------
+             :If A.q∨~A.list ⍝ define the object
+                 :If A.q∨A.replace∨0=ns.⎕NC name
+                     ns ∆createObj bUf
+                     count+←~A.q
+                 :Else
+                     msg,←'* "',NaM,'" not redefined',CR
+                 :EndIf
+
+            ⍝ Show what would be defined
+             :ElseIf A.replace∨0=ns.⎕NC name ⍝ unknown?
+                 msg←msg Fmt NaM
+             :EndIf
+         :EndIf
+     :EndIf
+ :EndWhile
+ ⎕NUNTIE rEf ⋄ ⎕FUNTIE(⍴⍴tIE)↓tIE
+
+ :If (A.trans=2)∧(A.file≡0)∧dYw<count>0 ⍝ set ⎕PATH to the new utilities
+    ⍝ We use a different name for the namespace holding the emulation
+     to←(1+APLtype)⊃'SAPL' 'SAPL' '' 'APL2000' 'APLX' 'APL2'
+     ⎕PATH,←' ',to #.⎕NS Tns
+     :If 3≠Tns.⎕NC'∆AV' ⍝ define ∆AV as a variable if it is not already defined as a fn
+         ns.∆AV←∆xlate  ⍝ which will be picked up by ⎕PATH
+     :EndIf
+ :EndIf
+ msg←msg{⍺,(CR=¯1↑CR,⍺)↓CR,⍵}(⍕count),' objects defined'
+ :If inWs∧1∊'xfrcode'⍷⎕WSID ⋄ ⎕WSID←'renamethisws' ⋄ :EndIf
+ ⎕EX((count=0)∨A.debug∨~inWs)↓⊂'#.xfr'

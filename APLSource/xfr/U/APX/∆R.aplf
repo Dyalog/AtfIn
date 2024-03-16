@@ -1,0 +1,2 @@
+ Z←∆R  ⍝ Emulate APLX ⎕R
+ Z←⎕UCS 13

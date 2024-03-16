@@ -1,0 +1,40 @@
+ (ok msg)←{obj}∆infile arg;tie;cpt;rng;⎕IO;⎕TRAP;rep;fsz;ams;ok;list;define;t;new
+⍝ DanB 19971214 put in file TIEd. Append cpts if necessary.
+⍝ arg is tie#, replace, range(2), original file size(2), NO access matrix, list only, cpt no (0=AM)
+⍝ done and message string returned if nothing was defined
+ msg←⍴⎕IO←ok←0 ⋄ tie←arg[0]
+ fsz←2↑⎕FSIZE tie
+ rep←arg[1] ⋄ rng←arg[2 3] ⋄ ams←arg[6] ⋄ list←arg[7] ⋄ cpt←arg[8] ⋄ new←arg[4 5]≡1 1
+⍝ global 'NaM' refers to either a ComPonenT or the Access Table
+ ⎕TRAP←(21 'E' '(1e5+⌈/2↓⎕fsize tie)⎕fresize tie⋄→⎕lc')(666 'E' '→err')
+ ⎕FX'v←define w' '⎕signal 666/⍨×1↑(v v)←2↓∆createObj w'
+ →cpt↓am ⍝ is this the access matrix?
+⍝ must be a component
+⍝ because the file components are supposed to be sequential we can do:
+ →(cpt≠.<rng)↓end ⍝ exit if not in range to replace
+⍝ this cpt will be put in the file if new or replaced wanted
+ →(cpt<1↑fsz)⍴no ⍝ cannot replace even if /replace wanted
+ →(rep∨cpt≥1↓fsz)↓no
+⍝ this cpt COULD be added/replaced
+ →list⍴show
+ ok←1 ⋄ →(cpt<rng←1↓fsz)↓l10
+ (define obj)⎕FREPLACE tie,cpt ⋄ →end
+⍝ cpts are missing, pad enough to get there
+l10:→(cpt>rng)↓l20
+ rng←1+''⎕FAPPEND tie ⋄ →l10
+⍝ domain error means trouble
+l20:rng←÷cpt=(define obj)⎕FAPPEND tie ⋄ →end
+no:→list⍴end
+ msg←'* Component ',(⍕cpt),' not replaced' ⋄ →end
+⍝ this cpt COULD be replaced but all that is wanted is the cpt #
+show:msg←(ams<rep∨new)/'Access Matrix' ⋄ →cpt↓end
+ msg←⍕cpt ⋄ →end
+err:ok←0 ⋄ msg←'*** error defining ',(t/'Access Matrix'),(~t←cpt=0)/'cpt ',⍕cpt ⋄ →0
+⍝ we replace it if ~ams
+am:→list⍴show
+ msg←'* Access Matrix not replaced' ⋄ →(ams∨rep⍱new)⍴end
+ :Trap 19
+     msg←'* Access Matrix not replaced (problem encountered)'
+     (define obj)⎕FSTAC tie ⋄ msg←⍴ok←1
+ :EndTrap
+end:

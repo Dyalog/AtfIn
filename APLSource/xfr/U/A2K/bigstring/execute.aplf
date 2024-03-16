@@ -1,0 +1,37 @@
+ {r}←where execute exp;lev;b;L;head;n;V;eis;sok;nt;sp;rp;cut
+⍝ Cover for ⍎ that can deal with many tokens and " delimited strings
+⍝ exp only contains numeric or character elements (scalars or vectors) and maybe [←⍴,⊂]
+ (where sok)←2↑where,0 ⍝ does the string have to be checked for "s (1=OK)?
+ exp←sok fixQuote exp
+ :Trap 10 1 ⍝ LIMIT and WSFULL
+     r←where⍎exp
+ :Else
+       ⍝ There may be a header, e.g. var←
+       ⍝ The executable part is divided into elements
+       ⍝ Each element has a structural part (e.g. ⊂2 3⍴⊂,) and a tokens part.
+       ⍝ Each token may be another element surrounded by parentheses
+       ⍝ or a simple scalar or a string (but not a 1-elem string)
+     nt←=\exp≠''''
+       ⍝ See if we can split this in 2, execute each half and reassemble
+       ⍝ Account for nesting
+     b←nt∧exp∊'()' ⋄ L←+\b\1-2×')'=b/exp ⍝ 1-2×, not ¯1* (not fast enough)
+     head←(n←+/∨\⌽L<nt∧exp∊'←⍴,⊂')↑exp ⋄ (exp L nt)←n↓¨exp L nt
+     eis←{⊂⍣(1=≡⍵)+⍵}
+     sp←nt∧' '=exp
+     :If 0=⌈/L
+       ⍝ No nesting, this is a vector with scalars and/or strings only
+         n←sp/⍳⍴sp           ⍝ tokens are separated by spaces
+         n←n[⌈(⍴n)÷2]        ⍝ go in the middle
+         V←(eis where 1 execute n↑exp),eis where 1 execute n↓exp
+         r←where⍎head,(⎕CS''),'.V'
+     :Else  ⍝ This is nested.
+       ⍝ We grab the next level of nesting, execute each set of parens and
+       ⍝ insert them in the result.
+         b←(L>0)∨rp←(L=0)∧nt∧')'=exp
+         V←where 1∘execute∘{1↓¯1↓⍵}¨(cut←¯1⌽b/rp)⊂b/exp ⍝ this will generate a list of ⊂
+             ⍝ We know where each piece goes, put them back in the expression
+         (b/exp)←∊(⍴¨⊂⍨cut)↑¨'(',¨(⍕¨⍳⍴V),¨⊂'⊃',(⎕CS''),'.V)'
+             ⍝ This better work
+         r←where⍎head,exp
+     :EndIf
+ :EndTrap

@@ -1,0 +1,20 @@
+ r←{types}fileInfo name;⎕USING;f;tree
+⍝ Return file information.
+⍝ If 'name' is followed by '↓' the tree of the name (a dir) is returned.
+ :If 0=⎕NC'types'
+     types←'*'
+ :EndIf
+ types←(cut' ',types)~⊂''
+ types←{'*'=c1←1↑⍵:⍵ ⋄ '.'=c1:'*',⍵ ⋄ '*.',⍵}¨types
+
+ ⎕USING←'System.IO'
+ tree←'↓'∊name ⋄ name~←'↓'
+ r←⍬ ⋄ f←⎕NEW FileInfo,⊂⊂name
+
+ :If f.Exists
+     r←f
+ :ElseIf tree
+     r←types treefileInfo name
+ :ElseIf (f←⎕NEW DirectoryInfo,⊂⊂name).Exists
+     r←⊃,/f.GetFiles¨⊂¨types
+ :EndIf

@@ -1,0 +1,10 @@
+ r←∆createNfile file;⎕IO
+⍝ danb 19981104 create native file. as is approximate size
+ r←-((⍳⍴r)∊r←0,-⎕NNUMS)⍳⎕IO←0
+ :Trap 22
+⍝ file should not exist
+     file ⎕NTIE r
+     file ⎕NERASE r
+ :EndTrap
+ file ⎕NCREATE r
+ (⍳256)⎕NXLATE r ⍝ no tranlation

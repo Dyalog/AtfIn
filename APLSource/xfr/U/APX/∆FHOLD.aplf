@@ -1,0 +1,7 @@
+ {r}←{opt}∆FHOLD fs
+⍝ File resize/hold in APLX
+ :If 900⌶r←⍬
+     (1↓fs)⎕FRESIZE 1↑fs
+ :Else
+     ÷'hold not implemented'
+ :EndIf

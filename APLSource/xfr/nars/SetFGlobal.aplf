@@ -1,0 +1,5 @@
+ no←SetFGlobal env;data
+⍝ Set 1 F global given a matching environment
+ (no data)←env.(1↓Lengths↑¨Offsets↓¨⊂Block)
+ no←∆FI1 no
+ GLOBALS[no]←⊂(1+data⍳'.')↓data

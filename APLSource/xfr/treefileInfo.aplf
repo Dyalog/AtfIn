@@ -1,0 +1,16 @@
+ r←{types}treefileInfo name;⎕USING;f;d
+⍝ Return file information in form of tree
+ ⎕USING←'System.IO'
+ r←⍬ ⋄ d←name
+ :If 9≠⎕NC'name'
+     d←⎕NEW DirectoryInfo,⊂⊂name
+ :EndIf
+ :If d.Exists
+     :If 0=⎕NC'types'
+         types←'*'
+     :EndIf
+     r←⊃,/d.GetFiles¨⊂¨cencl,types
+     :If ×⍴f←d.GetDirectories⊂'*.*'
+         r←r,⊃,/types∘treefileInfo¨f
+     :EndIf
+ :EndIf

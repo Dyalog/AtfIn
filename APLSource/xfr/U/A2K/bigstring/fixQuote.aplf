@@ -1,0 +1,7 @@
+ fixQuote←{⍺←0 ⋄ ⍺:⍵ ⍝ skip?
+     ~∨/b←'"'=⍵:⍵ ⍝ any " to look at?
+     q←find1stQuotes ⍵
+     ~∨/q/b:⍵     ⍝ any string starting with "?
+     s←⍵ ⋄ (q/s)←'''' ⍝ ensure all strings start with '
+     s/⍨1+(q<≠\q)∧''''=⍵   ⍝ double 's inside the strings
+ }

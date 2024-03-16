@@ -1,0 +1,10 @@
+ r←{opt}∆FREAD arg
+⍝ ⎕← file fn
+⍝ arg is {[LIBRARY]} FILE, COMPONENT {,USER, PASSWORD}
+⍝ we only implement FILE (tie), CPT
+ :If 900⌶⍬
+     :If 0=1↑1↓arg ⋄ arg[1+⎕IO]←¯1+1↑1↓⎕FSIZE 1↑arg ⋄ :EndIf ⍝ 0 cpt= last cpt
+     r←⎕FREAD arg
+ :Else
+     ÷'not implemented'
+ :EndIf

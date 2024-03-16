@@ -1,0 +1,54 @@
+ r←{NS}∆xfrto Arg;file;q;range;t;XfrID;lock;obj;i;m;tn;ft;A;nL;se
+⍝ DanB 19971124 (c) transfer file or items to host, modified several times since then
+⍝ [source] ∆xfrto 'tohostfile /switches'
+⍝ Switches:
+⍝ /file=            use APL file given
+⍝ /range=n1[,n2]    transfer components n1 [to n2]
+⍝ /lock=            file lock to use
+⍝ /q                do not display banner
+⍝ /obj=             objects to transfer (default all)
+
+ A←('/-'Repl'/lock= /q /obj= /file= /range=')∆parse Arg ⍝ parse argument
+ ⎕←(~A.q)⌿⎕FMT'* XFR Dyalog version ',⍕∆version
+ :If 0=⎕NC'NS' ⋄ NS←⎕IO⊃⎕RSI ⋄ :EndIf
+ XfrID←'.xd','fw'[⎕IO+m←0≡A.file] ⍝ file extention to add
+
+ :If ~m ⍝      ---------------- File export -----------------
+     lock←FixInt⍕A.lock ⍝ 0 by default - no check if numeric
+     :If ∧/A.file∊⎕D ⋄ ft←,⍎A.file  ⍝ a tie number is acceptable
+     :Else ⋄ t←' ',A.file,' '
+         :If 1≠⍴ft←(∨/t⍷' ',⎕FNAMES,' ')⌿⎕FNUMS ⍝ already tied?
+             A.file ⎕FSTIE⌽lock,ft←1+⌈/⎕FNUMS,¯1+100×∆version
+         :EndIf
+     :EndIf
+     se←2↑⎕FSIZE ft,lock
+     :If 0≢A.range
+         se←((1↑se)⌈1↑i),(1↓se)⌊1+¯1↑i←FixInt A.range
+     :EndIf
+     tn←∆createNfile(⎕IO⊃A.Arguments),XfrID ⍝ add extension even if one already exists
+     :For i :In se[⎕IO]-⎕IO-⍳m←--/se
+         (('cpt',⍕i)∆formeVar ⎕FREAD ft,i,lock)∆writeNfile tn
+     :EndFor
+     r←(⍕m),' cpts transferred'
+    ⍝ Access Matrix: trap access problems
+     :Trap 19⊣i←0
+         m←⎕FRDAC ft,lock ⋄ ('AccessTable'∆formeVar m)∆writeNfile tn ⋄ i←6
+     :EndTrap
+     r←r,' with ',i↓'EMPTY Access Matrix'
+     ⎕FUNTIE(⍴⍴ft)↓ft ⍝ untie only if it wasn't tied
+
+ :Else ⍝     -------------- Workspace objects export ---------------
+     :If 0≡A.obj ⋄ nL←allObjsIn NS ⍝ do we transfer the whole workspace?
+     :Else ⋄ nL←{⎕ML←3 ⋄ (~⍵∊' ,')⊂⍵}A.obj
+     :EndIf
+     r←(⍕⍴nL),' objects exported'
+     tn←∆createNfile(⎕IO⊃A.Arguments),XfrID
+     XfrID←'DYW',(⍕∆version,100⊥⍉2 3⍴⎕TS),'; WS=',⎕WSID
+     ('⎕'∆formeVar XfrID)∆writeNfile tn
+     :For obj :In nL
+         (NS ∆forme obj)∆writeNfile tn
+     :EndFor
+ :EndIf
+⍝ 2016 06 22 Adam: ... to...
+ r,←CR,(⍕⎕NSIZE tn),' bytes written to ','/'⎕R'\\'⍣('Win'≡3↑⊃# ⎕WG'APLVersion')⊃,/1 ⎕NPARTS ⎕NNAMES⌷⍨⎕NNUMS⍳tn
+ ⎕NUNTIE tn

@@ -1,0 +1,10 @@
+ str←name makeVal val;dr;⎕PP
+    ⍝ Make a string representation of a value
+ ⎕PP←18
+ :If 2|dr←⎕DR val ⍝ numeric?
+     str←'N',name,(0⍕(⍴⍴val),⍴val),,' ',⍕val
+ :ElseIf (10|dr)∊0 2  ⍝ character?
+     str←'C',name,(0⍕(⍴⍴val),⍴val),' ',,val
+ :Else ⍝ must be an array
+     str←'A',name,'←',⎕SE.Dyalog.Utils.repObj val
+ :EndIf

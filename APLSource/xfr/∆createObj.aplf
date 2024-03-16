@@ -1,0 +1,177 @@
+ {(target name flag value)}←{target}∆createObj str;len;type;shape;fnname;⎕IO;n;names;oname;⎕PATH;sval;svar;t;source;monadic;tmpns;trad;T;Q;set;fix;ok;isD;Unnamed;cf
+⍝ DanB 2006 Return packed object defined in string along with its name and whether it has changed because
+⍝ 1: the fn name was different, 2: there was an error and the new name is ⍙[oldname]
+⍝ We also return the value for interested parties.
+
+⍝ The left arg is where the object will be defined.
+ ⎕PATH←'' ⋄ ⎕IO←1
+ type←''⍴str                                  ⍝ the object's type
+ value←str⍳' ' ⋄ len←⍎1↓value↑str             ⍝ name's length
+ set←Valid fnname←name←len↑value↓str ⋄ str←(len+value)↓str  ⍝ (valid?) name and object
+ shape←⍳0 ⋄ Unnamed←name≡,'û'
+⍝ Some types do not need to have a shape specified, e.g. Nulls, others do (e.g. vectors)
+ :If ∨/t←'ncNCIEMOFfR'=type ⍝ Num, Char, Intl', Enclosed, Mixed, Ops & Fns and obj Reps of fns need a shape
+     len←⍎(value←str⍳' ')↑str ⋄ str←value↓str ⍝ follows rank (len), Shape, obJ
+     :While 0≤len←len-1                       ⍝ collect shape, rank
+         value←str⍳' ' ⋄ shape←shape,⍎value↑str ⋄ str←value↓str
+     :EndWhile
+     type←'NCNCIEMOFFR'[t⍳1]                  ⍝ uppercase "ncf" for old versions
+ :EndIf
+
+ isD←{6::⍵ ⋄ dYw}1
+⍝ Some char strings represent fns (e.g. UCMDS files from APL+) and we must be able to deal with that
+ :If isD<(type='C')∧(1=⍴shape)∧1∊'   ∇'⍷6⍴str ⍝ isD is 1 if this came from Dyalog
+ :AndIf '∇'=¯1↑n←(-⊥⍨str∊' ',CR)↓str          ⍝ strip trailing spaces & CRs after last ∇
+     shape←⍴str←value←n ⋄ type←'c'
+ :EndIf
+
+ :If monadic←0∊⎕NC'target' ⋄ 'target'⎕NS'' ⋄ :EndIf
+ trad←value←flag←0
+ target.⎕EX name ⍝ ensure available
+
+⍝ It is possible the object was sent in Unicode points:
+ :If type∊'CFORc' ⋄ :AndIf (len←×/shape)<⍴str ⋄ :AndIf ∧/⎕IO⊃t←⎕VFI str
+     'BAD data'⎕SIGNAL 11/⍨len≠⍴str←⎕UCS⊃⌽t
+ :EndIf
+
+ :Select type
+
+ :CaseList 'RFOc'   ⍝ code; failure will be denoted by flag=2
+    ⍝ We define the code in a temp ns in case we need its ⎕OR.
+    ⍝ We create it in the root of the same workspace (# or ⎕SE)
+     tmpns←(⎕IO⊃('#'∊⍕target)⌽⎕SE #).⎕NS''
+     trad←0 ⍝ assume NOT a traditional fn
+     :If ∧/⎕IO⊃(t t)←⎕VFI str ⋄ str←⍎'⎕UCS t' ⋄ :EndIf ⍝ Unicode?
+    ⍝ It may come in many forms: as a ⎕CR (shape given) or ⎕VR (with preceeding ∇) or as a series
+    ⍝ of enclosures (e.g. ∊ ∘ ⎕A ) or an executable string in the original space (e.g. 2∘ ∇F).
+    ⍝ We try to see if this is a ⎕VR or a ⎕CR
+     :If (type='R')∧Unnamed ⋄ fnname←name←'∆' ⋄ :EndIf
+     :If (2=⍴shape)∨' ∇'≡∪6↑str
+         :If 0=1↑0⍴fnname←tmpns.⎕FX value←∆FX ∆fixrep shape⍴str
+         :AndIf 0=1↑0⍴fnname←tmpns.⎕FX 0 6↓⎕FMT value ⍝ try w/o the decorators (e.g. Dfns)
+             ⎕←'*** Can''t fix "',name,'"; reason ',⍕fnname ⋄ name←'⍙',name
+             {}÷0={6::0 ⋄ ∆⍙debug}0 ⍝ stop when debugging
+             ⍎'target.',name,'←value' ⋄ flag←2
+         :Else
+             :If (type∊'OF')∧flag←~trad←fnname≡name  ⍝ this should only happen for non-niladic fns
+                 tmpns.⍎name,'←',fnname ⍝ names may differ
+             :EndIf
+         :EndIf
+
+     :ElseIf str≡,'⍫'
+         ⎕←'*** Can''t fix "',name,'", it was locked' ⋄ flag←2
+     :Else ⍝ see if this is a seriesof enclosures. If the defn includes code we ⎕FX that code
+     ⍝ in the tmp ns where it will be included in the subsequent definition.
+         :Trap ok←cf←0
+             value←tmpns{n←~(10|⎕DR ⍵)∊0 2 ⋄ p←{1⌽')(',⍵}
+                 (n<2∊⍴⍴⍵)∨1∊('∇←',CR)∊⍵:⍺.⎕FX ∆FX ⍵
+                 n∨1<⍴⍴⍵:p repObj ⍵ ⋄ 1<⍴,⍵:p ⍵ ⋄ ⍵}¨∆createEnc str
+             tmpns⍎name,'←',⍕value ⍝ try to define the fn
+             ok←1
+         :EndTrap
+
+         :If cf←~ok       ⍝ composed fn? (e.g. f←+)
+             :Trap 0 ⍝ if the defn includes a reference to a fn ( ∇name) we need
+            ⍝ to pick up the reference in the calling environment (better be there!)
+                 t←¯1⌽~' ∇'⍷value←str ⋄ tmpns⍎name,'←',((~∧/t)/'.',⍨⍕target),'(',(t/str),')' ⋄ ok←1
+             :EndTrap
+         :EndIf
+
+         :If ~ok ⋄ flag←2
+         :AndIf ~Unnamed ⍝ not a temp item
+             :If cf∧6=⎕EN ⋄ t←'probably a missing value in a composed fn' ⋄ :Else ⋄ t←{('⍎'=1↑⍵)↓⍵}⎕IO⊃⎕DM ⋄ :EndIf
+             ⎕←'*** Can''t fix "',name,'"; reason: ',t ⋄ name←'⍙',name
+             {}÷0={6::0 ⋄ ∆⍙debug}0 ⍝ stop when debugging
+             ⍎'target.',name,'←value'
+         :EndIf
+     :EndIf
+
+    ⍝ At this point either it worked and we have a fn named [name] in tmpns
+    ⍝ or we have a var named ⍙[name] in target
+     :If flag<2
+         :If flag<type='c' ⋄ value←tmpns.⎕VR fnname ⋄ :EndIf ⍝ this should never be returned in a ns
+         :If type='R'
+             value←tmpns.⎕OR fnname ⍝ fn reps
+             ⍎set/'target.',name,'←value'
+        ⍝ If the fn was a traditional one we redefine it in the target ns,
+         :ElseIf trad
+             :Trap 11 ⍝ the names MUST match
+                 {}÷name≡target.⎕FX tmpns.⎕NR name
+             :EndTrap
+        ⍝ otherwise we assign it directly - this means the source ns will be copied also, invisibly
+         :Else ⋄ ⍎'target.',name,'←tmpns.',fnname
+         :EndIf
+     :EndIf
+
+ :Case 'C'        ⍝ Char data
+     value←⍎(set/((name≢,'⎕')/'target.'),name,'←'),'shape⍴str'
+ :Case 'I'        ⍝ Intl' data
+     value←⍎(set/((name≢,'⎕')/'target.'),name,'←'),'shape⍴⎕ucs ',str
+ :Case 'N'        ⍝ Numeric data
+ ⍝ 2013: V13.2 introduced a new ⎕RL which is incompatible with previous versions
+     :If '⎕rl'≡819⌶name
+         ⎕←'** WARNING: Import of ⎕RL not supported; value was: ',{30<≢⍵:'...',⍨20↑⍵ ⋄ ⍵}str
+     :Else
+         value←⍎(set/'target.',name,'←'),'shape⍴',str,',⍳0'  ⍝ a LIMIT error could occur if 15<⍴shape
+     :EndIf
+ :CaseList 'EM'
+     value←⍎(set/'target.',name,'←'),'shape⍴ ∆createEnc str'
+
+ :CaseList 'ST'   ⍝ sourced code (T is ⎕OR of source code)
+⍝ This may fail because required elements are not here. If it does we return the source,
+⍝ assuming the caller will deal with it but we still flag the problem.
+     tmpns←target ⋄ value←source←∆createEnc str
+     :If fix←monadic⍱T←'T'∊type ⍝ fix if neither mon nor ⎕OR
+    ⍝ Another problem to consider is the fact that the names may differ
+    ⍝ If so we need to erase the fixed name and reassign to the one
+         fix←name≡findSrcId source ⍝ does the name match?
+     :EndIf
+     :Trap 11 ⍝ there is a problem here that affect vars defined with ⍳
+        ⍝ They can be wrong if ⎕IO is NOT set in the definition as we use our own defined ⎕IO value
+         value←fix tmpns.⎕FIX value
+         value←{t←⍵ ⋄ ⎕OR't'}⍣T+value
+         ⍎(set∧T≥fix)/'target.',name,'←value'
+     :Else
+         :If Unnamed⊣t←'of "',name,'"' ⋄ t←1⌽'"inside "',⎕IO⊃(⎕IO⊃⌽⎕STATE'name')~⊂,'û' ⋄ :EndIf
+         ⎕←'*** Unable to fix script ',t,'. ',(⍕target),'.⍙',name,' created with the source.'
+         flag←2 ⋄ name←'⍙',name ⋄ ⍎'target.',name,'←value'
+     :EndTrap
+
+ :Case 'U'
+     value←⍎(set/'target.',name,'←'),'⎕NULL'
+
+ :CaseList 'PQ'   ⍝ non sourced namespace (Q is ⎕OR of a P)
+     :If ~Q←type='Q'
+        ⍝ We may have been provided with the name of a space and not its representation.
+        ⍝ We stop in debug mode (we assume variable 'A' in ∆xfrfrom exists)
+         :If '#.'≡2↑str
+             :Trap {6::⍵ ⋄ A.debug↓⍵}6
+                 value←⍎str ⋄ →0 ⍝ use existing ns?
+             :Else
+                 :If Unnamed⊣t←'for "',name,'"' ⋄ t←1⌽'"inside "',⎕IO⊃(⎕IO⊃⌽⎕STATE'name')~⊂,'û' ⋄ :EndIf
+                 ⎕←'*** VALUE error encountered ',t,', variable won''t be defined properly'
+                 value←⎕DM ⋄ →0
+             :EndTrap
+        ⍝ This may be an element in an array, if so we musn't create
+        ⍝ a variable; we use a temp space for that.
+         :ElseIf Valid name ⍝ are we dealing with a real var or a temp?
+             n←name target.⎕NS''  ⍝ create the name here
+             tmpns←target⍎name    ⍝ cannot be done with ⍎n!
+         :Else ⍝ temp
+             tmpns←target.⎕NS''
+         :EndIf
+     :Else
+         tmpns←target.⎕NS''       ⍝ for ⎕OR of a package we use a tmp ns
+     :EndIf
+     tmpns⍎⍕n[1;],'←',,1 0↓n←NSSysVars ⍝ ensure default is there
+     :While ×⍴str
+         n←str⍳' ' ⋄ len←⍎n↑str ⋄ tmpns ∆createObj len↑n↓str
+         str←(len+n)↓str
+     :EndWhile
+     value←{t←⍵ ⋄ ⎕OR't'}⍣Q⌷tmpns
+    ⍝ If we need to create the object in the target env we need to
+    ⍝ use 'name' ⎕NS for namespaces:
+     ⍎(Q>monadic)/'target.',name,'←value'
+ :EndSelect
+
+ {}÷monadic≤(type='P')∨1≥⍴target.⎕NL-⍳9 ⍝ there should only be ONE ojbect for non packages

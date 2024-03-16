@@ -1,0 +1,4 @@
+ r←data n_put filename;tn
+ tn←filename ⎕NCREATE 0
+ r←data ⎕NAPPEND tn 80
+ ⎕NUNTIE tn

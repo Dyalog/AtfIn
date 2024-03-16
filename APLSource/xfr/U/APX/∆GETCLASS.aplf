@@ -1,0 +1,7 @@
+ r←{env}∆GETCLASS name;⎕USING
+⍝ ⎕GETCLASS in APLX
+ :If 900⌶⍬ ⋄ env←'' ⋄ :EndIf
+ :If '.net'≡env
+     ⎕USING←''
+ :EndIf
+ r←⍎name

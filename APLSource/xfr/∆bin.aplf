@@ -1,0 +1,28 @@
+ fn←∆bin fn;line0;locals;r2;result;s;t;⎕IO;h
+⍝ milinta 1999 fix fn for Dyalog APL: add {} around left arg
+ ⎕IO←0 ⋄ →(r2←2=⍴⍴fn)⍴m10
+⍝ vector defn: already contains {}?
+ line0←(h←fn⍳⎕AV[3])↑fn←1/fn ⋄ →l10
+m10:line0←fn[0;]
+l10:
+⍝ parse line: split result from args from locals
+ s←<\'∇'=line0                ⍝ cover 1 line defn with 2 ∇s
+ t←∨\s<line0∊'∇;⍝' ⋄ locals←t/line0
+ →('{'∊(~t)/line0)⍴0          ⍝ is it already OK?
+ s←⌽∨\⌽s∨line0∊'←' ⋄ result←s/line0
+ line0←1↓(s⍲1⌽s←t=' ')/t←' ',(s⍱t)/line0
+ :If ∨/s←'('=line0            ⍝ is this an operator?
+     →(t←s⍳1)↓0
+     line0←'{',(t↑line0),'}',t↓line0
+ :Else
+     →(2=+/s←' '=line0)↓0         ⍝ 2 args? keep going
+     t←∨\s ⋄ line0←'{',((~t)/line0),'}',t/line0
+ :EndIf
+⍝ rebuild header
+ s←⍴line0←result,line0,locals
+ →r2⍴m20
+ fn←line0,h↓fn ⋄ →0
+m20:                          ⍝ does the line fit in the matrix?
+ →(s≤1↓t←⍴fn)⍴m30             ⍝ can we drop them?
+ fn←(t[0],s)↑fn               ⍝ pad
+m30:fn[0;]←(¯1↑⍴fn)↑line0     ⍝ and replace

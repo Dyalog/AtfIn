@@ -1,0 +1,6 @@
+ id←findSrcId src;head;dropto
+⍝ Find the ID (APL name) of the source (a VTV)
+ head←src⊃⍨1⍳⍨':'=⊃∘rlb¨src
+ dropto←{(⍵⍳⍺)↓⍵}
+ head←rlb' 'dropto':'dropto head ⍝ 1st word is ID
+ id←(¯1+⌊/head⍳' ⍝:')↑head

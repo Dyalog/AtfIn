@@ -1,0 +1,2 @@
+ r←∆AI ⍝ ⎕AI in APLX
+ r←7↑r+1000×4↑0=1↑r←⎕AI

@@ -1,0 +1,10 @@
+ ∆all←∆all;nc;ns;b;⎕ML;here
+⍝ DanB 1998 all names not used, modified 2009 to account for base classes first
+ ⎕ML←1
+ (ns ∆all nc)←⎕NSI{ns←⍎⎕IO⊃⌽⍵,⍺ ⋄ v←ns.⎕NL-2 3 4 9 ⋄ ns v(ns.⎕NC v)}⊂here←⎕CS''
+⍝ Remove root objects if present
+ :If ns≡# ⋄ (∆all nc)←(nc>0)∘/¨(∆all nc) ⋄ :EndIf
+⍝ We have to order the objects according to class (e.g. Interfaces first)
+ :If ∨/b←9.4=nc ⋄ b←b\ns{11::1 ⋄ ⍬⍴⍴∊⎕CLASS ⍺⍎⍵}¨b/∆all ⋄ :EndIf
+ ∆all←∆all[⍋b+9.1 9.5⍳nc]~⊂2↓here   ⍝ exclude ourself
+ ∆all←∆all,⍨cut' ⎕lx ⎕pw ⎕io ⎕ct ⎕pp ⎕ml ⎕div ⎕wx'
