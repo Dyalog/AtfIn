@@ -1,4 +1,4 @@
- {Target}ATFIN arg;Filename;POS;TXT;NM;DUFF;Filenum;Block;SCRIPT;⎕ML;more;TR;t;Pa;sc;len;BlockSizes;GotObjects
+ {Target}ATFIN arg;Filename;POS;TXT;NM;DUFF;Filenum;Block;SCRIPT;⎕ML;more;TR;t;Pa;sc;len;BlockSizes;GotObjects;CTarget;OUTDIR;file;ccns;txt
      ⍝ Transfer in from an ATF file produced by e.g. )OUT on IBM
      ⍝ All system variables are saved at the end.
      ⍝ All system variable changes saved in QuadThings
@@ -14,8 +14,13 @@ Try:
      ⍝ We try to determine the width of the 'records' - should be a multiple of 80 to 84
  (Filenum BlockSizes)←Pa OPEN(Filename BlockSizes)
  Block←(0,1↑BlockSizes)⍴''
- SCRIPT←0 72⍴PROBLEMS←QuadThings←''
- :If 0=⎕NC'Target' ⋄ Target←# ⋄ :EndIf
+ SCRIPT←0 72⍴PROBLEMS←QuadThings←OUTDIR←''
+ :If 0=⎕NC'Target' ⋄ Target←#
+ :ElseIf 2=⎕NC'Target'
+     OUTDIR←Target
+     'Target'⎕NS''
+     (ccns←⎕NS'').(flatten dir)←0 OUTDIR
+ :EndIf
  CTarget←(⍕Target),'.'                       ⍝ where do we have to define these objects
  'Cannot define objects in this namespace'⎕SIGNAL 11 if Target≡⎕THIS
  ⎕WSID←{((0∊b)×-1+⊥⍨b←'.'≠⍵)↓⍵}Filename      ⍝ change ws here to avoid overwriting the original
@@ -27,7 +32,7 @@ Try:
          SCRIPT←(POS,0)↓SCRIPT               ⍝ And throw away from script
          :Select ⍬⍴TXT                       ⍝ What are we dealing with?
          :CaseList 'ACNacn'   ⍝ Variable
-             :If '⎕'=TXT[2]                  ⍝ If it is a system object
+             :If ('⎕'=TXT[2])∧OUTDIR≡''      ⍝ If it is a system object
                  QuadThings,←⊂TXT            ⍝ then save it until later
              :Else
                  CHARFN TXT
@@ -37,22 +42,32 @@ Try:
              :If ∨/'⎕fx'⍷⎕SE.SALTUtils.lCase TXT ⍝←CORRECT TXT ⍝ CORRECT does not seem to be needed
                  t←¯1+TXT⍳'⎕'                    ⍝ where does ⎕FX start
                  TXT←t↓TXT                       ⍝ Throw away any left arg of ⎕FX
-                 :If ⍱/0 2∊10|⎕DR⍎CTarget,TXT    ⍝ Execute it - check for error
-                     ⎕←'   Function: ',NM,'   *** FAILED ***' ⍝ Tell user about the problem
-                     PROBLEMS,←⊂TXT              ⍝ and save copy of text
-                 :Else
-                     ⎕←'   Function: ',NM
+                 :If (OUTDIR≢'')∧'⎕FX'≡3↑(+/∧\' '=TXT)↓TXT
+                     txt←⍎3↓TXT
+                     NM PUTFN txt
+                 :Else ⍝ Not OUTDIR
+                     :If ⍱/0 2∊10|⎕DR⍎CTarget,TXT    ⍝ Execute it - check for error
+                         ⎕←'   Function: ',NM,'   *** FAILED ***' ⍝ Tell user about the problem
+                         PROBLEMS,←⊂TXT              ⍝ and save copy of text
+                     :Else
+                         ⎕←'   Function: ',NM
+                     :EndIf
                  :EndIf
              :Else ⍝ is RANK, SHAPE, CODE
                  len←55⌊⍴TXT←(1+⍴NM)↓TXT
                  sc←⍴t←(∧\TXT[⍳len]∊' ',⎕D)/len↑TXT  ⍝ separate Rank/Shape from code
                  t←2⊃⎕VFI t
-                 :If (1↑t)≠¯1+⍴t
-                 :OrIf ⍱/0 2∊10|⎕DR Target.⎕FX(1↓t)⍴sc↓TXT,'    '
-                     ⎕←'   Function: ',NM,'   *** FAILED ***'
-                     PROBLEMS,←⊂TXT              ⍝ and save copy of text
-                 :Else
-                     ⎕←'   Function: ',NM
+                 :If OUTDIR≢''
+                     txt←{(-+/∧\⌽⍵=' ')↓¨↓⍵}(1↓t)⍴sc↓TXT,'    '
+                     NM PUTFN txt
+                   :Else ⍝ Not OUTDIR
+                     :If (1↑t)≠¯1+⍴t
+                     :OrIf ⍱/0 2∊10|⎕DR Target.⎕FX(1↓t)⍴sc↓TXT,'    '
+                         ⎕←'   Function: ',NM,'   *** FAILED ***'
+                         PROBLEMS,←⊂TXT              ⍝ and save copy of text
+                     :Else
+                         ⎕←'   Function: ',NM
+                     :EndIf
                  :EndIf
              :EndIf
          :Else

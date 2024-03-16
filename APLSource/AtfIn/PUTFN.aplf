@@ -1,0 +1,7 @@
+ NM PUTFN txt;file
+ NM←(-+/∧\' '=⌽NM)↓NM
+ :If ⎕NEXISTS file←OUTDIR,'/',NM,'.aplf' ⍝ /// Could be an operator of course
+     file←ccns ⎕SE.Link.CaseCode file
+ :EndIf
+ (⊂txt)⎕NPUT file
+ ⎕←'   Function: ',file
