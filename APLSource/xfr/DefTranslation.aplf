@@ -1,0 +1,10 @@
+ ∆⍙CodT←DefTranslation NaM;rEf;bUf
+⍝ Set up the translate table
+
+ ('Unknown APL: ',NaM)⎕SIGNAL(∨/rEf←∨\NaM⍷∆equivalence)↓11  ⍝ is this a known APL?
+ bUf←(⍴NaM)↓rEf/∆equivalence  ⍝ IMPORTANT: 'bUf' starts with a CR
+⍝ The CR is a delimiter - no spaces allowed
+ bUf←(~∨\(CR,':')⍷bUf)/bUf ⍝ all the replacements
+⍝ Cleanup: remove double CRs and replace CRs by %
+ rEf←CR=∆⍙CodT←(NaM⍲1⌽NaM←CR=bUf)/bUf
+ ∆⍙CodT[rEf/⍳⍴rEf]←'%'

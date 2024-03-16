@@ -1,0 +1,31 @@
+r←ToDyalog (sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts
+⍝ Convert a folder containing APL source files (.aplf and .apla) to Dyalog APL
+⍝ From APL interpreter indentified by sourceapl
+
+:If ~⎕NEXISTS sourcedir
+:OrIf 1≠⊃1 ⎕NINFO sourcedir
+   →0 ⊣ r← 'Not a directory: ',sourcedir
+:EndIf
+
+3 ⎕MKDIR targetdir
+:If 0≠≢⊃0 (⎕NINFO⍠1) ⊢ targetdir,'/*'
+   →0 ⊣ r← 'Target directory not empty: ',targetdir
+:EndIf
+
+:If (≢∆APLs)<APLtype←∆APLs⍳⍥⎕C ⊂sourceapl
+   →0 ⊣ r← 'sourceapl must be one of: ',⍕∆APLs
+:EndIf
+
+∆⍙CodT←DefTranslation 1 ⎕C sourceapl
+
+files←⊃0 (⎕NINFO⍠1) ⊢ sourcedir,'/*'
+
+:For file :In files
+   src←⊃⎕NGET file 0
+   parts←⎕NPARTS file
+   :If '.aplf'≡3⊃parts
+      src←∆fixrep src
+   :EndIf
+   (⊂src) ⎕NPUT ⎕←targetdir,'/',∊1↓parts
+:Endfor
+r←(⍕≢files),' files processed'
