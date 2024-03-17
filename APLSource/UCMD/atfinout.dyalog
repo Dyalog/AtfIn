@@ -1,4 +1,4 @@
-:namespace  inout ⍝ V2.00
+﻿:namespace  inout ⍝ V2.00
 ⍝ Transfer objects in and out of the ws
 ⍝ 2015 05 21 Adam: NS header
 ⍝ 2016 07 21 DanB: changed Help
@@ -75,11 +75,26 @@
       :Select Cn
       :Case 1 ⍝ IN
          ⍝ We accept ATF, NARS and extended format files (DYW, APX, etc.)
-           ⎕SE.Link.Create ((⍕⎕THIS),'.AtfIn') 'c:\devt\AtfIn\APLSource\AtfIn'
+     
           :If A.atf∨('atf'≡ext←ext,(A.atf∧0∊⍴ext)/'atf')∨0≠≢A.outdir
-              ⍝ ⎕FIX ⎕SE.SALT.Load'lib\atfin -source'
               b←arg,('.'∊arg)↓'.',A.Propagate'alphabets apl' ⍝ ensure '.' in name
-              ((1+0≢A.outdir)⊃##.THIS A.outdir) AtfIn.ATFIN b              
+              :If 0≠≢ATFINDIR
+                  ⎕SE.Link.Create((⍕⎕THIS),'.AtfIn')(ATFINDIR,'/APLSource/AtfIn')
+                  ((1+0≢A.outdir)⊃##.THIS A.outdir)AtfIn.ATFIN b
+              :Else ⍝ Old version
+                  ⎕FIX ⎕SE.SALT.Load'lib\atfin -source'
+                  :If 0≢A.outdir
+                      'TMPNS'⎕NS''
+                      WSID←⎕WSID
+                      TMPNS ⍙⍙.ATFIN b
+                      ⎕WSID←WSID
+                      (opts←⎕NS'').(arrays sysVars caseCode)←1
+                      opts ⎕SE.Link.Export TMPNS A.outdir
+                  :Else
+                      ##.THIS ⍙⍙.ATFIN b
+                  :EndIf
+              :EndIf
+     
           :ElseIf ext≡'nars'
               ##.⎕CY'xfrcode.dws'
               ##.THIS xfr.nars.makeWS arg
@@ -193,6 +208,9 @@
               'xfr.∆describe'⎕CY'xfrcode.dws'
               r←'to/from'⎕R'to'⊢¯11↓∆describe   ⍝ M11146
           :EndSelect
+     
+      :ElseIf Cmd≡'ToDyalog'
+          r←']Transfer.ToDyalog sourcedir targetdir sourceapl'
       :EndIf
     ∇
 
