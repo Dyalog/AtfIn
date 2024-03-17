@@ -1,4 +1,4 @@
-﻿:namespace  inout ⍝ V1.26
+:namespace  inout ⍝ V2.00
 ⍝ Transfer objects in and out of the ws
 ⍝ 2015 05 21 Adam: NS header
 ⍝ 2016 07 21 DanB: changed Help
@@ -14,11 +14,12 @@
 ⍝ 2021 05 13 MKrom: handle files without extension
 ⍝ 2021 05 14 Adam: Add ]in -outdir
 ⍝ 2022 03 29 Adam: [19747] handle extensions in any case
+⍝ 2024 03 17 MKrom: Add "todyalog" ucmd and move bulk of code to GitHub
 
     (⎕IO ⎕ML)←1
 
 
-    AllCmds←'In' 'Out'
+    AllCmds←'In' 'Out' 'ToDyalog'
 
     APLs←'APL2PC' 'APL2MF' 'VSAPL' 'APLX' 'DYALOG' 'APLPLUS' 'STSCMF' 'SHARPMF' 'SHARPX'
     Surr←'A2K'    'AP2'    'AP2'   'APX'  'DYW'    'A2K'     'A2K'    'SAM'     'SAX'
@@ -30,16 +31,23 @@
       r.Name←AllCmds
       r[1].Desc←'Import a workspace from a workspace transfer file' ⍝ descriptions
       r[2].Desc←'Export the current workspace to a workspace transfer file'
+      r[3].Desc←'Translate folder containing source code to Dyalog APL'
       r.Group←⊂'Transfer'                                 ⍝ same group
      ⍝ Parsing rules for each:
       r[1].Parse←'1 -atf -alphabets= -file[=] -list -noam -obj= -q -range= -replace -trans[=]0 1 2 -outdir= -apl=',⍕APLs
       r[2].Parse←'1 -atf -obj= -file[=] -range= -lock= -q'
+      r[3].Parse←,'3'
     ∇
 
-    ∇ r←Run(Cmd A);arg;nars;files;q;Cn;ext;msg;folder;name;n;findExt;lc;x;b;apl;TMPNS;WSID;opts;AtfIn;xfr
+    ∇ r←Run(Cmd A);arg;nars;files;q;Cn;ext;msg;folder;name;n;findExt;lc;x;b;apl;TMPNS;WSID;opts;AtfIn;xfr;ATFINDIR
     ⍝ Transfer code to/from files
+      ATFINDIR←2 ⎕NQ'.' 'GetEnvironment' 'ATFINDIR'
       Cn←AllCmds⍳⊂Cmd ⋄ lc←⎕SE.SALTUtils.(lCase⍣WIN) ⋄ findExt←{⎕C ⍵↑⍨-⊥⍨b∧0∊b←'.'≠⍵}
       (folder name)←⎕SE.SALTUtils.{'/\'splitLast ⍵}'"'~⍨arg←1⊃A.Arguments
+      :If Cmd≡'ToDyalog'
+          ⎕SE.Link.Create((⍕⎕THIS),'.xfr')(ATFINDIR,'/APLSource/xfr')
+          →0⊣r←xfr.ToDyalog A.Arguments
+      :EndIf
       :If (1=Cn)∧0∊⍴ext←findExt name
       :AndIf 0∊⍴ext←(⊂(1+A.file),APLs⍳⊂A.apl)⊃Xext,⊂''
          ⍝ In input mode, if the extension has been omitted, we try to guess
