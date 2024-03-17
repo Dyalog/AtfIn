@@ -1,4 +1,4 @@
-r←ToDyalog (sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts
+r←ToDyalog (sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z
 ⍝ Convert a folder containing APL source files (.aplf and .apla) to Dyalog APL
 ⍝ From APL interpreter indentified by sourceapl
 
@@ -16,7 +16,14 @@ r←ToDyalog (sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts
    →0 ⊣ r← 'sourceapl must be one of: ',⍕∆APLs
 :EndIf
 
-∆⍙CodT←DefTranslation 1 ⎕C sourceapl
+:If ⎕NEXISTS map←sourcedir,'/atfmap.txt'
+    ⎕←'Using ',map
+    z←1⊃⎕NGET map 1
+    ('Invalid map file for source apl = ',sourceapl) ⎕SIGNAL (sourceapl ''≢⍥⎕C⊢2↑z)↓11
+    ∆⍙CodT←↑,/'%',¨2↓z
+:Else
+    ∆⍙CodT←DefTranslation 1 ⎕C sourceapl
+:EndIf
 
 files←⊃0 (⎕NINFO⍠1) ⊢ sourcedir,'/*'
 
@@ -26,6 +33,6 @@ files←⊃0 (⎕NINFO⍠1) ⊢ sourcedir,'/*'
    :If '.aplf'≡3⊃parts
       src←∆fixrep src
    :EndIf
-   (⊂src) ⎕NPUT ⎕←targetdir,'/',∊1↓parts
+   (⊂src) ⎕NPUT targetdir,'/',∊1↓parts
 :Endfor
 r←(⍕≢files),' files processed'
