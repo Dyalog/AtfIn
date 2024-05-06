@@ -1,0 +1,16 @@
+ ∆FMT←{
+     0=⎕NC'⍺':⎕FMT ⍵
+     ~'/'∊⍺:⍺ ⎕FMT ⍵  ⍝ for performance
+     ~'¨'∊⍺:('¨'@(=∘'/')⍺)⎕FMT ⍵  ⍝ for performance
+     s←⎕IO←1  ⍝ localise
+     R←{ ⍝ Transform /pattern/ to ¨pattern¨ replacing inner ¨s with a PUA character
+         ~⍵.PatternNum:⍵.Match
+         m←1↓¯1↓⍵.Match
+         ~'¨'∊m:'¨',m,'¨'  ⍝ for performance
+         s↑←m~⍨⎕UCS 57343+⍳6399 ⍝ 1st avail PUA char
+         ' '=s:⎕SIGNAL⊂('EN' 7)('Message' 'Could not find suitable temporary substitute character')
+         '¨',(s@(=∘'¨')m),'¨'
+     }
+     a←'<[^>]*>|⊂[^⊃]*⊃|⎕[^⎕]*⎕|⍞[^⍞]*⍞|¨[^¨]*¨' '/[^/]*/'⎕R R ⍺
+     '¨'@(=∘s)a ⎕FMT ⍵
+ }
