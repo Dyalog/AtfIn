@@ -1,0 +1,11 @@
+ R←∆XLIB X
+ X,←'*'↓⍨≢X
+ :If 0∊⍴R←↑⊃⎕NINFO⍠1⊢X
+     :If ∨/'?*'∊X
+         R←0 0⍴' '
+     :Else
+         'XFHOST ERROR FindFirstFile 1 0 3 The system cannot find the path specified.'⎕SIGNAL 22
+     :EndIf
+ :Else
+     R←R[⍋R;]
+ :EndIf
