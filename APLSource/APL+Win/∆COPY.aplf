@@ -1,0 +1,21 @@
+ no←{names}∆COPY ws;b;mon
+⍝ )COPY names in current ns, report names unable to copy
+ :If mon←0=⎕NC'names' ⋄ no←2 9⍴'someNamescantBcopied'
+ :ElseIf 1≢≡names ⋄ names←{w/⍨b⍲1⌽b←' '=⍵},' ',names
+ :EndIf
+
+ ⎕←'⎕COPY not supported, called from ',(2⊃⎕SI,⊂'Immediate Execution'),'[',(⍕2⊃⎕LC,0),']'
+
+⍝ A name cannot be copied if it is a fn on the stack or a label
+ :If ~mon
+     b←(1=⎕NC names)∨names∊⎕SI
+     no←∆MIX b⌿names
+     :If 0∊b
+         ((~b)/names)(⎕IO⊃⎕RSI).⎕CY ws
+     :EndIf
+ :Else
+     :Trap 11
+         (⎕IO⊃⎕RSI).⎕CY ws
+         no←0⌿no
+     :EndTrap
+ :EndIf

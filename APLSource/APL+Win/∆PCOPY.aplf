@@ -1,0 +1,21 @@
+ no←{names}∆PCOPY ws;b;mon
+⍝ )PCOPY names in current ns, report names unable to copy
+ :If mon←0=⎕NC'names' ⋄ no←2 9⍴'someNamescantBcopied'
+ :ElseIf 1≢≡names ⋄ names←{w/⍨b⍲1⌽b←' '=⍵},' ',names
+ :EndIf
+
+ ⎕←'⎕PCOPY not supported, called from ',(2⊃⎕SI,⊂'Immediate Execution'),'[',(⍕2⊃⎕LC,0),']'
+
+⍝ A name cannot be copied if it exist
+ :If ~mon
+     b←0≠⎕NC names
+     no←∆MIX b⌿names
+     :If 0∊b
+         ((~b)/names)(⎕IO⊃⎕RSI).⎕CY ws
+     :EndIf
+ :Else
+     :Trap 11
+         (⎕IO⊃⎕RSI).⎕CY ws
+         no←0⌿no
+     :EndTrap
+ :EndIf

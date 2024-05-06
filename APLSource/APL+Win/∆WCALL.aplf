@@ -1,0 +1,13 @@
+r←∆WCALL args;fn;flags;f
+
+:Select 1⊃,⊆args
+:Case 'W_Init'
+    r←'' '' (⍕1↓2 ⎕NQ '.' 'GetCommandLineArgs')
+:Case 'MessageBox' ⍝ 0 question title ('MB_ICONQUESTION MB_YESNOCANCEL')
+    flags←' '(≠⊆⊢) 5⊃args
+    f←+/(MB_FLAGS[;2],0)[MB_FLAGS[;1]⍳flags]
+    'fn'⎕NA'I user32∣MessageBox* P <0T <0T I' ⍝ Associate local name with DLL function.
+    r←fn f@4⊢1↓args
+:Else
+   'This WCALL not currently supported' ⎕SIGNAL 11
+:EndSelect
