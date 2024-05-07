@@ -1,0 +1,12 @@
+ ∆CN←{ ⍝ NOTE: fails on 'abc',⊂'def' where it should give 'abc' 'def'
+     r←0⍴⊂''
+     ⍺←0⍴⊂''
+     P←{
+         1<|≡⍵:⍺∘∇¨⍵
+         0∊¯1↓⍴⍵:0
+         ⍺{r,←'^.*[^ ]?'⎕S'&'⊢(⍺,⊂⎕UCS 10 13)⎕R'\n'⍠'Regex'(0 1)⍠'Mode' 'D'⊢⍵}⍤1⊢⍵
+         0
+     }
+     _←⍺ P ⍵
+     r
+ }

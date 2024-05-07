@@ -1,1 +1,16 @@
- ∆DR←{3=10|t←⎕DR ⍵:323 ⋄ 326≠t:t ⋄ 1=≡⍵:807 ⋄ t}
+ ∆DR←{
+     0≠⎕NC'⍺':⎕SIGNAL⊂('EN' 16)('Message' 'Dyadic ⎕DR has not been modelled yet')
+     t←⎕DR ⍵
+     (t∊11)∨0 1∊⍨⊂⍵:11 ⍝ Boolean incl. single
+     3=10|t:323        ⍝ numeric
+     p←326=t           ⍝ pointer
+     s←1=≡,⍵           ⍝ simple
+     s∧p∧9∧.=,{40⎕ATX'⍵'}¨⍵:99998+⍬≡⍴⍵ ⍝ object(s)
+     s∧p:807           ⍝ hetero
+     p:326             ⍝ pointer
+     c←0=80|t          ⍝ char
+     c∧∧/⍵∊∆AV:82      ⍝ in codepage
+     320=t:322         ⍝ Unicode
+     645=t:645         ⍝ float
+     ⎕SIGNAL⊂('EN' 16)('Monadic ⎕DR model does not handle given argument')
+ }

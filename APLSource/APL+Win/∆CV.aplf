@@ -1,0 +1,4 @@
+ ∆CV←{ ⍝ NOTE: fails on 'abc',⊂'def' where it should give 'abc' 'def'
+     ⍺←⎕UCS 10
+     (≢⍺)↓∊⍺∘,¨∆CN ⍵
+ }
