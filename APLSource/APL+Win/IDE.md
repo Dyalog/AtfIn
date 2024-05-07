@@ -3,3 +3,4 @@
   appropriate in the situation.
 - Gutter has clear indication of which lines were input
 - Hover over variable to see expression for it.
+- `⎕WATCHPOINTS` with IDE integration.

@@ -8,3 +8,7 @@
   no effect when ⎕ARBOUT ⍳0 is used.
 
 * Dyadic `⎕DR` is complex and does multiple advanced things, including data (de-)serialisation using binary or XML form.
+
+* `⎕SINL` cannot be modelled, but is unlikely to appear in code; use `)SINL`.
+
+* `⎕WATCHPOINTS` would be very nice to have

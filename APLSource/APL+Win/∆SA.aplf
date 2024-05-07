@@ -1,0 +1,2 @@
+∆SA
+⎕SIGNAL⊂('EN'16)('Message' '⎕SA is not modelled')

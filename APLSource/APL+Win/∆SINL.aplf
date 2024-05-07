@@ -1,0 +1,3 @@
+ ∆SINL
+ {2 ⎕NQ ⎕SE'KeyPress'⍵}¨(⊂'QT'),')SINL',(⊂'ER')
+ ⎕SIGNAL⊂('EN' 16)('Message' '⎕SINL not modelled — using )SINL…')
