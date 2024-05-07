@@ -12,3 +12,7 @@
 * `⎕SINL` cannot be modelled, but is unlikely to appear in code; use `)SINL`.
 
 * `⎕WATCHPOINTS` would be very nice to have
+
+* `⎕CALL` cannot be modelled, but is usually easy to rewrite to pure APL.
+
+* 

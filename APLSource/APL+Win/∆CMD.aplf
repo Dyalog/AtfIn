@@ -1,0 +1,9 @@
+ ∆CMD←{
+     ⍺←1
+     r←0 0⍴''
+     0∊⍴⍵:r⊣⍞⊣⍞←'Press Enter after closing the DOS prompt'⊣⎕CMD'cmd' '' ⍝ NOTE: The extra prompt is to emulate waiting for completion
+     0=⍺:r⊣⎕CMD ⍵''
+     1=⍺:r⊣⎕CMD ⍵
+     2=⍺:r⊣⎕CMD ⍵'Hidden'
+     3=⍺:r⊣⎕CMD ⍵  ⍝ NOTE: This shold really run hidden
+ }
