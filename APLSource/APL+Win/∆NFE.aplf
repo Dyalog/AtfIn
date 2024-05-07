@@ -1,0 +1,67 @@
+ r←{x}∆NFE y;action;⎕ML;encodingType;arg;ifExists;Nonce;recurseFolders;contents;⎕IO;charOffset;old
+ Nonce←⎕SIGNAL{⊂('EN' 16)('Message'('⎕NFE ''',⍵,''' not modelled'))}
+ ⎕ML←1 ⋄ ⎕IO←1
+ y←⊆y
+ action←⎕C,⊃y
+ arg←⊃1⌽y
+ :Select action
+ :Case 'encoding'
+     GLOBAL∆NFE∆ENCODINGTYPE←'ASCII' 'UTF-16BE' 'UTF-16LE' 'UTF-16' 'UTF-8' 'UTF-32'⊃⍨'ascii' 'bigendianunicode' 'unicode' 'utf7' 'utf8' 'utf32'⍳⊂⎕C arg
+ :Case 'methods'
+     r←4↓':Case ''(\w+)'''⎕S'\1'⎕NR⊃⎕SI
+ :Case 'properties'
+     r←4↑':Case ''(\w+)'''⎕S'\1'⎕NR⊃⎕SI
+ :Case 'usereplstr'
+     GLOBAL∆NFE∆USEREPLSTR←arg
+ :Case 'append'
+     x GLOBAL∆NFE∆ENCODINGTYPE(13 10)⎕NPUT⍠'NEOL'GLOBAL∆NFE∆USEREPLSTR⊢arg 2
+ :Case 'copy'
+     ifExists←'Error' 'Replace'⊃⍨0 1⍳2↓y,0
+     arg ⎕NCOPY⍠'IfExists'ifExists⊢x ⍝ NOTE: Not sure if Error should be Skip
+ :Case 'create'
+     ⎕SIGNAL(1≠≢y)/⊂⊂('EN' 16)('Message' '⎕NFE ''copy'' model does not support fileAccess fileShare permissions')
+     ''⎕NPUT x
+ :Case 'delete'
+     recurseFolders←0 2⊃⍨0 1⍳3↓y,0 0
+     recurseFolders ⎕NDELETE arg
+ :Case 'exists'
+     r←⎕NEXISTS arg
+ :Case 'getcreationtime'
+     r←10 ⎕NINFO arg
+ :Case 'getcreationtimeutc'
+     r←⊃¯1 ⎕DT 15 ⎕NINFO arg
+ :Case 'getlastaccesstime'
+     r←9 ⎕NINFO arg
+ :Case 'getlastaccesstimeutc'
+     r←⊃¯1 ⎕DT 14 ⎕NINFO arg
+ :Case 'getlastwritetime'
+     r←9 ⎕NINFO arg
+ :Case 'getlastwritetimeutc'
+     r←⊃¯1 ⎕DT 13 ⎕NINFO arg
+ :Case 'move'
+     ⍝ NOTE: No guarantee the names match, but best we can do:
+     ⎕NUNTIE ⎕NNUMS⌿⍨⊣/x⍷⎕NNAMES
+     ⎕FUNTIE ⎕FNUMS⌿⍨⊣/x⍷⎕FNAMES
+     arg ⎕NMOVE x
+ :Case 'read'
+     contents←⊃GLOBAL∆NFE∆ENCODINGTYPE ⎕NGET x
+     :If 3=≢y
+         contents↓⍨←3⊃y
+     :EndIf
+     :If 4=≢y
+         contents↑⍨←(≢contents)⌊4⊃y
+     :EndIf
+ :Case 'replace'
+     :If 3≤≢y
+         (3⊃y)⎕NCOPY arg
+     :EndIf
+     arg ⎕NCOPY⍠'IfExists' 'Replace'⊢x
+ :Case 'truncate'
+     ''⎕NPUT arg 1
+ :Case 'write'
+     charOffset←⊃2↓y,0
+     old←⊃GLOBAL∆NFE∆ENCODINGTYPE ⎕NGET arg
+     (charOffset(↑,x,↓)old)GLOBAL∆NFE∆ENCODINGTYPE(13 10)⎕NPUT⍠'NEOL'GLOBAL∆NFE∆USEREPLSTR⊢arg 1
+ :Else
+     Nonce action
+ :EndSelect
