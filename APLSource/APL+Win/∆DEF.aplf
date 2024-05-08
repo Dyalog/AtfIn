@@ -1,0 +1,9 @@
+ ∆DEF←{
+     ⎕IO←1
+     ⍺←⎕TS
+     ~0 ⎕DT⊂timestamp:⎕SIGNAL 11
+     1::1 0
+     r←(⍬⍴⎕RSI).⎕FX fnrep
+     ⍬≡0/r:2,r
+     r⊣r(1159⌶)⍨7↑¨@2(⍬⍴⎕RSI).⎕FX r
+ }

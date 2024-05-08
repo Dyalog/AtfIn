@@ -1,0 +1,2 @@
+ ∆DEFL y
+ ⎕SIGNAL⊂('EN' 16)('Message' '⎕DEFL not modelled yet')
