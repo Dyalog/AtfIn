@@ -6,7 +6,9 @@
  arg←⊃1⌽y
  :Select action
  :Case 'encoding'
-     GLOBAL∆NFE∆ENCODINGTYPE←'ASCII' 'UTF-16BE' 'UTF-16LE' 'UTF-16' 'UTF-8' 'UTF-32'⊃⍨'ascii' 'bigendianunicode' 'unicode' 'utf7' 'utf8' 'utf32'⍳⊂⎕C arg
+     arg ⎕C⍨←¯3
+     ⎕SIGNAL('utf7'≡arg)↑⊂('EN' 16)('Message' '⎕NFE model does not support UTF-7')
+     GLOBAL∆NFE∆ENCODINGTYPE←'ASCII' 'UTF-16BE' 'UTF-16LE' 'UTF-8' 'UTF-32'⊃⍨'ascii' 'bigendianunicode' 'unicode' 'utf8' 'utf32'⍳⊂
  :Case 'methods'
      r←4↓':Case ''(\w+)'''⎕S'\1'⎕NR⊃⎕SI
  :Case 'properties'
