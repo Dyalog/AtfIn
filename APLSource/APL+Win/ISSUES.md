@@ -13,6 +13,6 @@
 
 * `⎕WATCHPOINTS` would be very nice to have
 
-* `⎕CALL` cannot be modelled, but is usually easy to rewrite to pure APL.
+* `⎕CALL` and ``⎕STPTR` cannot be modelled, but is usually easy to rewrite to pure APL.
 
-* 
+* `⎕RL` not fully modelled (missing two RNGs and `∆RL` is not updated when generating); only `⎕RL←` should be replaced with `∆RL←`.

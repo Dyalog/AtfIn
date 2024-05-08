@@ -1,5 +1,2 @@
- ∆WSLIB←{
-     ⍬≡0⍴⍵:⎕SIGNAL⊂('EN' 16)('Message' '⎕WSLIB libno is not modelled')
-     ⎕IO←1
-     ⊃⍤0⊢2⊃¨⎕NPARTS⊃⎕NINFO⍠1⊢⍵,'/*.dws'
- }
+ r←∆WSLIB
+ r←'dws'∘∆LIB

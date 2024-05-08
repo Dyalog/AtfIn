@@ -1,0 +1,2 @@
+∆WSOWNER
+⎕SIGNAL⊂('EN' 16)('Message' '⎕WSOWNER not modelled')

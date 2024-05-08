@@ -1,0 +1,19 @@
+ SET∆RL a;⎕IO;⎕ML;ns
+ :Implements trigger ∆RL
+ ⎕ML←1 ⋄ ⎕IO←1 ⋄ ns←⊃⎕RSI
+ :Select ⊃a.NewValue
+ :Case 0
+     ns.⎕RL←⌽a.NewValue
+ :Case ¯1
+     ns.⎕RL←(⊃a.newValue)1
+ :Case ¯2
+     ⎕SIGNAL⊂('EN' 16)('Message' 'Subtract with Carry not modelled')
+ :Case ¯23
+     ⎕SIGNAL⊂('EN' 16)('Message' 'Multiplicative Linear Congruential Multiplier 48271 not modelled')
+ :Else
+     :If 0=1|a.NewValue
+     :AndIf 0<a.NewValue
+     :AndIf a.NewValue≤¯2+2*31
+         ⎕RL←(⊃a.NewValue)0
+     :EndIf
+ :EndSelect

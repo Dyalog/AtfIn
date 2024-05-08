@@ -1,0 +1,9 @@
+ r←∆WSTS;wsid;⎕IO;⎕ML
+ ⎕IO←1 ⋄ ⎕ML←1
+ wsid←∊{⍵,'.dws'/⍨''≡⍵}¨@3 ⎕NPARTS ⎕WSID
+ :If ⎕NEXISTS wsid
+ :AndIf 2=1 ⎕NINFO wsid
+     r←86400000000×¯1+13 ⎕NINFO wsid
+ :Else
+     ⎕SIGNAL⊂('EN' 16)('Message' '⎕WSTS for CLEAR WS not modelled')
+ :EndIf

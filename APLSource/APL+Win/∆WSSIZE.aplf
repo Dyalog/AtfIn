@@ -1,0 +1,4 @@
+ r←∆WSSIZE;⎕IO
+ ⎕IO←1
+ r←1⎕C 2 ⎕NQ #'GetEnvironment' 'MAXWS'
+ r←(2⊃⎕VFI r∩⎕D)××/1024*'KMGTPE'⍳r∩⎕A
