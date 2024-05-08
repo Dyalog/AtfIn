@@ -1,0 +1,32 @@
+ r←{x}(p _COPY_ ns)ws;ns;name
+ r←⍬
+ :If 900⌶⍬
+     x←(⎕NS ⍬).(⎕NL-⍳10⊣⎕CY ws)
+ :Else⍝┌──words─┐ ┌if mat┐
+     x←'\S+'⎕S'&'↓⍣(2=≢⍴x)x
+     x/¨⍨←≠x ⍝ null dups
+ :EndIf
+
+ :For name :In x
+     :If ×≢name
+         :Trap 1 11
+             :If p
+             :AndIf ×ns.⎕NC name
+                 r,←¯1
+             :Else
+                 name ns.⎕CY ws
+                 r,←⍬(⊢-2×3=⍴)ns.⎕NC name ⍝ var:2; fn:1
+             :EndIf
+         :Case 1 ⍝ ws full
+             r,←¯2
+         :Case 11 ⍝ not found:0; label:¯3
+             r,←¯3×39≠⎕DMX.ENX
+         :EndTrap
+     :Else
+         r,←127
+     :EndIf
+ :EndFor
+
+ :If 900⌶⍬
+     r∩⍨←¯1
+ :EndIf

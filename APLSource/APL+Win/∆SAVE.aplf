@@ -1,0 +1,2 @@
+ r←∆SAVE
+ r←{⍺←0 ⋄ 'RESET'≢⍺}⎕SAVE,⍤⊢

@@ -1,0 +1,2 @@
+ r←∆PSAVE
+ r←{⍺←0 ⋄ 'RESET'≢⍺}⎕SAVE{⎕NEXISTS,⍵:'WS NAME ERROR'⎕SIGNAL 22 ⋄ ,⍵}
