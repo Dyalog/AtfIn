@@ -1,7 +1,7 @@
- mat←{chars}∆IDLIST classes;source
-⍝ Return a matrix list of objects in the active workspace whose most
-⍝ local definitions are members of classes and which (optionally) begin
-⍝ with letters in 'chars'.
- {}⎕FX,⊂'r←chars r'
- source←⍎⎕IO⊃⎕NSI
- mat←chars source.⎕NL(2 2 2 2⊤+/,classes)/1 0 2 3
+ ∆IDLIST←{
+     ⍺←1
+     Exec←(2147483647×~⍺)∘(⍬⍴⎕RSI).(86⌶)
+     ⍬=0/⍺:Exec'⎕NL ',⍕⍵
+     ⎕IO←1
+     Exec('^|''|$'⎕R'&'''⊢⍺),'⎕NL ',⍕4 2 1⍳⍸⌽2 2 2 2⊤⍵
+ }

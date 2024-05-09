@@ -2,10 +2,10 @@
 * For `(a a)←1 2` APL+Win sets `a←1` but Dyalog sets `a←2`. This is hard to fix, but probably a rare occurrence.
 
 * `⎕PR` is impossible to model. R is a character singleton or empty vector. If R is
-   empty, ⍞ input is returned with the prompt included in the result, 
+   empty, `⍞` input is returned with the prompt included in the result, 
   including any changes user has made. If R is a character, that character
-   replaces each unmodified element of the prompt in the result. ⎕PR has 
-  no effect when ⎕ARBOUT ⍳0 is used.
+   replaces each unmodified element of the prompt in the result. `⎕PR` has 
+  no effect when `⎕ARBOUT ⍳0` is used.
 
 * Dyadic `⎕DR` is complex and does multiple advanced things, including data (de-)serialisation using binary or XML form.
 
@@ -18,3 +18,9 @@
 * `⎕RL` not fully modelled (missing two RNGs and `∆RL` is not updated when generating); only `⎕RL←` should be replaced with `∆RL←`.
 
 * Skipping `⎕DEFL` for now as not worth the effort, though totally doable.
+
+* `⎕IDLOC` is hard (WIP)
+
+* User commands are different, so `∆UCMD` is unlikely to work as `⎕UCMD`
+
+* 

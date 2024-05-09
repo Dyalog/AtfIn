@@ -1,0 +1,10 @@
+ ∆VGET←{
+     ⍺←1
+     Exec←(2147483647×~⍺)∘(⍬⍴⎕RSI).(86⌶)
+     (varname default)←w←⊆⍵
+     ¯1=⎕NC varname:⎕SIGNAL 11
+     isvar←2=Exec'⎕NC ''',varname,''''
+     isvar:Exec varname
+     2=≢w:⊃⊢/⍵
+     ⎕SIGNAL 6
+ }

@@ -1,0 +1,3 @@
+ r←∆LOCK fnlist
+ fnlist←'\S+'⎕S'&'↓fnlist
+ r←⊃⍤0⊢fnlist⌿⍨{0::1 ⋄ 0=⎕LOCK ⍵}¨fnlist
