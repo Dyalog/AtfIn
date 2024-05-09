@@ -1,0 +1,5 @@
+ ∆INBUF←{
+     ⍺←1
+     0=⍺:⎕SIGNAL⊂('EN' 16)('Message' '0 ⎕INBUF not modelled')
+     (0⌈⍺){⍺ ⎕NQ ⎕SE'Keypress'⍵}¨(⊂'ER')@{⍵=⎕UCS 10}⍵
+ }
