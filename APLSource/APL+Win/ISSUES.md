@@ -24,3 +24,5 @@
 * User commands are different, so `∆UCMD` is unlikely to work as `⎕UCMD`
 
 * `∆INBUF` isn't perfect, but it does allow basic things.
+
+* `∆SYSVER` looks at the executable timestamp, but the interpreter does actually know when it was created, as shown in the About box
