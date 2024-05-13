@@ -9,7 +9,7 @@
      s∧p:807           ⍝ hetero
      p:326             ⍝ pointer
      c←0=80|t          ⍝ char
-     c∧∧/⍵∊∆AV:82      ⍝ in codepage
+     c∧∧/,⍵∊∆AV:82     ⍝ in codepage
      320=t:322         ⍝ Unicode
      645=t:645         ⍝ float
      ⎕SIGNAL⊂('EN' 16)('Monadic ⎕DR model does not handle given argument')
