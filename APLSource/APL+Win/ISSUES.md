@@ -42,13 +42,17 @@
 
 - `∆CRLPC` cannot read public comments from locked functions
 
-- `⎕LOG` is part of the larger logging system.
+- `⎕LOG` is part of the larger logging system. It writes timestamped and optionally (left arg) event-typed entries a log file.
 
 ## Keywords
 
 - `:Assert expr` is a comment at runtime, but an assertion when running in debug mode
 
+- `:Verify expr` is like `:Assert` but always executes, even when in production mode
+
 - `:Debug expr` is a comment at runtime, but an `:if DEBUGMODE ⋄ {}…` if in debug mode
+
+- `:Trace`… is part of the larger logging system. It is skipped unless in test mode. It is equivalent to `:IfTest ⋄ ⎕LOG`…
 
 ## Control structures
 
@@ -62,7 +66,13 @@
 
 ### Error Trapping
 
-- Rather than `:Case` by error number, APL+Win has `:CatchIf` 
+- `:Try` is `:Trap 0`
+
+- `:TryAll` is similar to the effect of setting ⎕ELX„'…⎕LC+1' but without the problems doing so could cause in called functions.
+
+- Rather than `:Case` by error number, APL+Win has `:CatchIf val≡⎕DM↑⍨¯1+⎕DM⍳⎕TCNL` which can be abbreviated to `:Catch val` — I suggest we allow `:Trap 'DOMAIN ERROR'`and `:Case 'DOMAIN ERROR'` etc.
+
+- `:Test` block is part of the larger logging system. It is skipped unless in debug mode. The `:Pass` block requires all statements to work without error, while the `:Fail` block requires all statements to error.
 
 ### Select
 
