@@ -44,6 +44,8 @@
 
 - `⎕LOG` is part of the larger logging system. It writes timestamped and optionally (left arg) event-typed entries a log file.
 
+- `⎕CFINFO` is not implemented
+
 ## Keywords
 
 - `:Assert expr` is a comment at runtime, but an assertion when running in debug mode
@@ -76,7 +78,7 @@
 
 ### Select
 
-- `:NextCase` is the opposite of `break` in C-like languages, i.e. where C continues the the next case, APL jumps to `:EndSelect` at the end of a `:Case` block, but `:NextCase` allows continuation.
+- `:NextCase` is the opposite of `break` in C-like languages, i.e. where C continues the the next case, APL jumps to `:EndSelect` at the end of a `:Case` block, but `:NextCase` allows continuation. The current substitution to `→2+⎕LC` fails if there are diamonds instead of line breaks.
 
-- `:Like` is like `:Case` except
+- `:Like` is like `:Case` except it takes a globbing pattern and matches the selected-for value against this. IMO such `:Select` statements should be written as `:If`/`:ElseIf` with an expression to do the matching.
 
