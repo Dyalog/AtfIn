@@ -1,0 +1,2 @@
+ ∆CFINFO
+ ⎕SIGNAL⊂('EN' 16)('Message' '⎕CFINFO not modelled')
