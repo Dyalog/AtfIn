@@ -1,0 +1,7 @@
+ ⍙_SlashBar←{ ⍝ ⌿
+     ⍺←⊢
+     0::⎕SIGNAL⊂⎕DMX.(('EN'EN)('EM'EM)('Message'(OSError{⍵,2⌽(×≢⊃⍬⍴2⌽⍺,⊂'')/'") ("',⊃⍬⍴2⌽⍺}Message)))
+     res←⍺ ⍺⍺⌿⍵
+     (3=40 ⎕ATX'⍺⍺')∧0∊(×≢⍴⍵)↑⍴⍵:res ⍝ reduce non-empty
+     (⍺⍺/⍬)⍨¨res
+ }
