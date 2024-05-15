@@ -1,7 +1,9 @@
  ⍙_Each←{ ⍝ ¨
-     (0=⎕NC'⍺')∧0∊⍴⍵:⍵
-     0=⎕NC'⍺':⍺⍺¨⍵
-     0∊⍴⍵:⍵
-     0∊⍴⍺:⍵⍴⍨⍴⍺
-     ⍺ ⍺⍺¨⍵
+     0=40 ⎕ATX'⍺':⍺⍺{  ⍝ monadic
+         (3≠41 ⎕ATX'⍺⍺')∧0∊⍴⍵:⍵  ⍝ userfn on empty
+         ⍺⍺¨⍵  ⍝ primitive or non-empty
+     }⍵
+     (3=41 ⎕ATX'⍺⍺')∨⍺⍱⍥(0∊⍴)⍵:⍺ ⍺⍺¨⍵  ⍝ primitive or non-empty
+     0∊⍴⍵:⍵  ⍝ empty ⍵
+     ⍵⍴⍨⍴⍺  ⍝ empty ⍺
  }
