@@ -2,11 +2,17 @@
  ⎕TRAP←0 'S' ⍝ Avoid loops
 
  interrupt←(en←⎕DMX.EN)≥1000
+ :If 0=#.⎕NC '∆QELX' ⋄ #.∆QELX←'⎕DM' ⋄ :EndIf
+ :If 0=#.⎕NC '∆QALX' ⋄ #.∆QALX←'⎕DM' ⋄ :EndIf
  EXPR←(1+interrupt)⊃#.(∆QELX ∆QALX)
+
  :If EXPR≢'⎕DM'
      ⎕←⊃⎕DMX.DM
-     ⎕←'GLOBALTRAP caught event ',(⍕en),' will execute ''',EXPR,'''. Hit enter to continue.'
-     :If 'STOP'≡Z←⍞
-         ∘∘∘
-     :EndIf
+     ⎕←'GLOBALTRAP caught event ',(⍕en),', executing ''',EXPR,''''
+     ⍝ Don't need manual intervention any more, remove the following commented lines after a wee bit more testing
+     ⍝ :If 'stop'≡⎕C Z←⍞~' '
+     ⍝     ∘∘∘
+     ⍝ :EndIf
+ :Else
+     EXPR←'⎕←⍪⎕DM'
  :EndIf

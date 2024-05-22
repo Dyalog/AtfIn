@@ -1,12 +1,8 @@
 (
- (
-  99
-  'E'
-  '⎕SIGNAL 11'
- )
+
  (
   0 1000
   'E'
-  '⍎#.A2K.GLOBALTRAP'
+  '#.A2K.(_te←GLOBALTRAP) ⋄ #.A2K._te ⎕SIGNAL (''⎕signal''≡⎕C 7↑#.A2K._te)/11 ⋄ ⍎#.A2K._te'
  )
 )
