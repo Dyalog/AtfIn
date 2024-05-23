@@ -8,7 +8,10 @@
  ⎕IO←0
  colw←1↓⍴Block                  ⍝ Block acts as a buffer
  :If LINES>1↑⍴Block             ⍝ has Block enough lines to meet request?
-     BL←⎕NREAD Filenum,82,LINES×colw
+     BL←⎕NREAD Filenum,(UNICODE⊃82 80),LINES×colw
+     :If UNICODE
+        BL←⎕UCS TRANSLATE[⎕UCS BL]
+     :EndIf
      BL←((⌊(⍴BL)÷colw),colw)⍴BL ⍝ and reshape to lines of 80 to 83
      Block⍪←BL                  ⍝ buffer it
  :EndIf                         ⍝ Return what is asked for if possible

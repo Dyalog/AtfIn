@@ -15,10 +15,14 @@
  :Else ⍝ ensure uppercase
      apl←ToUpper la.APL
  :EndIf
- tr←Translate
- :If apl≡'APL2MF'
+ :If (apl≡'APLPLUS')∧80=⎕DR ' '
+     tr←256⍴0 ⋄ tr[AplPlusAV]←AplPlusUnicode
+     tr[10 13 32 149]←AplPlusUnicode[10 13 32 149] ⍝ These are repeated and get damaged
+ :ElseIf apl≡'APL2MF'
      ⍝ There should be a special table for APL2MF here but fn <CORRECT> does the trick instead
      tr←VSAPL
+ :Else
+    tr←Translate
  :EndIf
      ⍝ Reverse underscored letters and lowercase letters?
 ⍝      :If la.FLIPLU=(⊂apl)∊'APL2PC' 'APL2MF' ⍝ 'flip' reversed for this APL

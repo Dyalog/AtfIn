@@ -14,4 +14,9 @@
      BS←BlockSizes
  :EndIf
  TR←Pa SetTR Filenum,1↑BS               ⍝ Set up translation
- TR ⎕NXLATE Filenum
+ :If UNICODE←(Pa.APL≡'APLPLUS')∧80=⎕DR ' '      ⍝ APL+Win to Unicode Interpreter
+    (¯1+⍳256) ⎕NXLATE Filenum ⍝ Handle Translation with a table
+    TRANSLATE←TR
+ :Else
+    TR ⎕NXLATE Filenum ⍝ Classic: Handle translation with NXLATE
+ :EndIf
