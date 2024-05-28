@@ -34,7 +34,7 @@ l30: :If APLtype∊3 4 ⍝ is this APL2000 or APLX?
              c,⍨U.A2K.bigstring.fixQuote ⍵↓⍨-⍴c←⍵/⍨∨\('⍝'=⍵)>≠\U.A2K.bigstring.find1stQuotes ⍵}
          fn←1↓⊃,/CR,¨fix¨cut CR,fn
      :EndIf
-     fn←∆⍙CodT ∆txtrepl fn
+     fn←∆⍙CodT ∆txtrepl2 fn
 end: →mat↓0
      fn←⎕FMT fn
  :EndIf

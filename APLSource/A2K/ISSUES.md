@@ -2,7 +2,7 @@
 
 ## Primitives and syntax
 
-- Monadic `←` is sink, but we cannot just blanket replace `←` with `⍙LeftArrow` — it has to be replaced only if nothing is between `←` and a `⋄` on the left or the beginning of the line.
+- ✅ Monadic `←` is sink, but we cannot just blanket replace `←` with `⍙LeftArrow` — it has to be replaced only if nothing is between `←` and a `⋄` on the left or the beginning of the line.
 
 - For `(a a)←1 2` APL+Win sets `a←1` but Dyalog sets `a←2`. This is hard to fix, but probably a rare occurrence.
 
@@ -16,14 +16,13 @@
 
 - `⎕SINL` cannot be modelled, but is unlikely to appear in code; use `)SINL`.
 
-- `⎕NOVALUE` is only used from `:Return` and `:Res` both of which are not in Dyalog. It is simply `⎕EX` on the return variable names.
+- ✅ `⎕NOVALUE` is only used from `:Return` and `:Res` both of which are not in Dyalog. It is simply `⎕EX` on the return variable names.
 
 ## System variables
 
 - `⎕RL` not fully modelled (missing two RNGs and `∆RL` is not updated when generating); only `⎕RL←` should be replaced with `∆RL←`.
 
 - `⎕PR` is impossible to model. R is a character singleton or empty vector. If R is empty, `⍞` input is returned with the prompt included in the result, including any changes user has made. If R is a character, that character replaces each unmodified element of the prompt in the result. `⎕PR` has no effect when `⎕ARBOUT ⍳0` is used.
-
 * `⎕WATCHPOINTS` would be very nice to have
 
 ## System functions
@@ -50,7 +49,7 @@
 
 - `:Assert expr` is a comment at runtime, but an assertion when running in debug mode
 
-- `:Verify expr` is like `:Assert` but always executes, even when in production mode
+- ✅ `:Verify expr` is like `:Assert` but always executes, even when in production mode
 
 - `:Debug expr` is a comment at runtime, but an `:if DEBUGMODE ⋄ {}…` if in debug mode
 
@@ -64,7 +63,7 @@
 
 - `:IfTest` is `:If TESTMODE`
 
-- `:ContinueIf`, `:LeaveIf`, `:ReturnIf` are short forms of `:If`…`:Continue` etc.
+- ✅`:ContinueIf`, `:LeaveIf`, `:ReturnIf` are short forms of `:If`…`:Continue` etc.
 
 ### Error Trapping
 
@@ -81,4 +80,3 @@
 - `:NextCase` is the opposite of `break` in C-like languages, i.e. where C continues the the next case, APL jumps to `:EndSelect` at the end of a `:Case` block, but `:NextCase` allows continuation. The current substitution to `→2+⎕LC` fails if there are diamonds instead of line breaks.
 
 - `:Like` is like `:Case` except it takes a globbing pattern and matches the selected-for value against this. IMO such `:Select` statements should be written as `:If`/`:ElseIf` with an expression to do the matching.
-
