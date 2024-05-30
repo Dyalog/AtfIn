@@ -9,7 +9,14 @@ r←ToDyalog (sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;ma
 
 3 ⎕MKDIR targetdir
 :If 0≠≢⊃0 (⎕NINFO⍠1) ⊢ targetdir,'/*'
-   →0 ⊣ r← 'Target directory not empty: ',targetdir
+   ⎕← 'Target directory not empty: ',targetdir
+   ⍞← 'Overwrite? [Y/n]'
+   :If 'n'=⎕C ¯1↑⍞
+      →0
+   :Else
+      3 ⎕NDELETE targetdir
+      3 ⎕MKDIR targetdir
+   :EndIf
 :EndIf
 
 :If (≢∆APLs)<APLtype←∆APLs⍳⍥⎕C ⊂sourceapl
