@@ -41,5 +41,6 @@ files←⊃0 (⎕NINFO⍠1) ⊢ sourcedir,'/*'
       src←∆fixrep src
    :EndIf
    (⊂src) ⎕NPUT targetdir,'/',∊1↓parts
+   ⍞←⊢/3⊃parts
 :Endfor
 r←(⍕≢files),' files processed'
