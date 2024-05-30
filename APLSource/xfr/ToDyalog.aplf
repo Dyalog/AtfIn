@@ -1,46 +1,48 @@
-r←ToDyalog (sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z
+ r←ToDyalog(sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z;dest;rewrites
 ⍝ Convert a folder containing APL source files (.aplf and .apla) to Dyalog APL
 ⍝ From APL interpreter indentified by sourceapl
 
-:If ~⎕NEXISTS sourcedir
-:OrIf 1≠⊃1 ⎕NINFO sourcedir
-   →0 ⊣ r← 'Not a directory: ',sourcedir
-:EndIf
+ :If ~⎕NEXISTS sourcedir
+ :OrIf 1≠⊃1 ⎕NINFO sourcedir
+     →0⊣r←'Not a directory: ',sourcedir
+ :EndIf
 
-3 ⎕MKDIR targetdir
-:If 0≠≢⊃0 (⎕NINFO⍠1) ⊢ targetdir,'/*'
-   ⎕← 'Target directory not empty: ',targetdir
-   ⍞← 'Overwrite? [Y/n]'
-   :If 'n'=⎕C ¯1↑⍞
-      →0
-   :Else
-      3 ⎕NDELETE targetdir
-      3 ⎕MKDIR targetdir
-   :EndIf
-:EndIf
+ 3 ⎕MKDIR targetdir
+ ⎕NDELETE⍠1⊢targetdir,'/*.apl?'
 
-:If (≢∆APLs)<APLtype←∆APLs⍳⍥⎕C ⊂sourceapl
-   →0 ⊣ r← 'sourceapl must be one of: ',⍕∆APLs
-:EndIf
+ :If (≢∆APLs)<APLtype←∆APLs⍳⍥⎕C⊂sourceapl
+     →0⊣r←'sourceapl must be one of: ',⍕∆APLs
+ :EndIf
 
-:If ⎕NEXISTS map←sourcedir,'/atfmap.txt'
-    ⎕←'Using ',map
-    z←1⊃⎕NGET map 1
-    ('Invalid map file for source apl = ',sourceapl) ⎕SIGNAL (sourceapl ''≢⍥⎕C⊢2↑z)↓11
-    ∆⍙CodT←↑,/'%',¨2↓z
-:Else
-    ∆⍙CodT←DefTranslation 1 ⎕C sourceapl
-:EndIf
+ :If ⎕NEXISTS map←sourcedir,'/atfmap.txt'
+     ⎕←'Using ',map
+     z←1⊃⎕NGET map 1
+     ('Invalid map file for source apl = ',sourceapl)⎕SIGNAL(sourceapl''≢⍥⎕C⊢2↑z)↓11
+     ∆⍙CodT←↑,/'%',¨2↓z
+ :Else
+     ∆⍙CodT←DefTranslation 1 ⎕C sourceapl
+ :EndIf
 
-files←⊃0 (⎕NINFO⍠1) ⊢ sourcedir,'/*'
+ files←'atfmap.txt'~⍥⊆⍨⊃0(⎕NINFO⍠1)⊢sourcedir,'/*'
+ rewrites←⊃⎕NINFO⍠1⊢targetdir,'/rewrite/*'
+ r←(⍕≢files),' files processed (',(⍕≢rewrites),' were replaced by rewrites)'
+ files/⍨←~files∊⍥(1↓¨⎕NPARTS)rewrites
 
-:For file :In files
-   src←⊃⎕NGET file 0
-   parts←⎕NPARTS file
-   :If '.aplf'≡3⊃parts
-      src←∆fixrep src
-   :EndIf
-   (⊂src) ⎕NPUT targetdir,'/',∊1↓parts
-   ⍞←⊢/3⊃parts
-:Endfor
-r←(⍕≢files),' files processed'
+ ⍞←'Progress: '
+ :For file :In files
+     src←⊃⎕NGET file 0
+     parts←⎕NPARTS file
+     dest←targetdir,'/',∊1↓parts
+     :Select 3⊃parts
+     :Case '.aplf'
+         src←∆fixrep src
+         (⊂src)⎕NPUT dest
+         ⍞←'f'
+     :Case '.apla'
+         (⊂src)⎕NPUT dest
+         ⍞←'a'
+     :Else
+         dest ⎕NCOPY file
+         ⍞←'?'
+     :EndSelect
+ :EndFor
