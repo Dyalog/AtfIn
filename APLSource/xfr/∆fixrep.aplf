@@ -34,6 +34,8 @@ l30: :If APLtype∊3 4 ⍝ is this APL2000 or APLX?
              c,⍨U.A2K.bigstring.fixQuote ⍵↓⍨-⍴c←⍵/⍨∨\('⍝'=⍵)>≠\U.A2K.bigstring.find1stQuotes ⍵}
          fn←1↓⊃,/CR,¨fix¨cut CR,fn
      :EndIf
+      ⍝  ├1:┌─opt. result─┐   ┤├2:larg─┤├3:┌name─┐  ┌rarg─┐┤
+     fn←'^((?: *[\w∆⍙]+ *←)? *)([\w∆⍙]+)( +[\w∆⍙]+ +[\w∆⍙]+)'⎕R'\1{\2}\3'⍠'Mode' 'D'⊢ fn ⍝ Make dyadic ambivalent
      fn←∆⍙CodT ∆txtrepl2 fn
 end: →mat↓0
      fn←⎕FMT fn
