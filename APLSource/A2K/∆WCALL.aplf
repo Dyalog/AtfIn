@@ -2,7 +2,7 @@ r←∆WCALL args;fn;flags;f
 
 :Select 1⊃,⊆args
 :Case 'W_Init'
-    r←'' '' (⍕1↓2 ⎕NQ '.' 'GetCommandLineArgs')
+    r←'' '' (1↓∊' ',¨ 1↓2 ⎕NQ '.' 'GetCommandLineArgs')
 :Case 'MessageBox' ⍝ 0 question title ('MB_ICONQUESTION MB_YESNOCANCEL')
     flags←' '(≠⊆⊢) 5⊃args
     f←+/(MB_FLAGS[;2],0)[MB_FLAGS[;1]⍳flags]
