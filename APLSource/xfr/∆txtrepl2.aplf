@@ -1,6 +1,6 @@
  T←S ∆txtrepl2 T;⎕ML;from;to
 ⍝ 'S' is delimited list of search/replace items
  ⎕ML←1
- ⍝           ┌─string─┐┌cmt┬leave┬─two cols─┐┌cut on =⊃┐
- (from to)←↓⍉'''[^'']''|⍝.*' '&'⍪(⊢⍴⍨2,⍨2÷⍨≢)(1↓¨⊢⊂⍨⊢=⊃)S
+ ⍝           ┌─string──┐┌cmt┬leave┬─two cols─┐┌cut on =⊃┐
+ (from to)←↓⍉'''[^'']*''|⍝.*' '&'⍪(⊢⍴⍨2,⍨2÷⍨≢)(1↓¨⊢⊂⍨⊢=⊃)S
  T←from ⎕R to⍠1⍠'UCP'1⊢T
