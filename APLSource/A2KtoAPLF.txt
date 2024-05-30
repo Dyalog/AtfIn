@@ -1,0 +1,29 @@
+ r←fns A2KtoAPLF path;fn;cont;tn;i
+ :If 0=⎕NC'fns'
+     fns←0 ⎕NL 3
+ :EndIf
+ :If 1≥≡fns
+     fns←,⊂fns
+ :EndIf
+ path,←'/'↓⍨'/\'∊⍨¯1↑path
+ :try
+     ⎕MKDIR path
+ :catchall
+ :endtry
+ :For fn :In fns
+     tn←¯1+⌊/¯1,⎕xnnums
+     :try
+         tn ⎕XNCREATE⍨path,fn,'.aplf'
+     :catchall
+         :for i :in ⍳9
+            :try
+                tn ⎕XNCREATE⍨path,fn,'-',(⍕i),'.aplf'
+                :Leave
+            :catchall
+            :endtry
+         :endfor
+     :endtry
+     cont←⎕UCS'X-APL'⎕UCS ⎕CV 0 ⎕CR fn
+     cont ⎕NAPPEND tn
+     ⎕NUNTIE tn
+ :EndFor
