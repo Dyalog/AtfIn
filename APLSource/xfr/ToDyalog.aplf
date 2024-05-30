@@ -23,7 +23,7 @@
      ∆⍙CodT←DefTranslation 1 ⎕C sourceapl
  :EndIf
 
- files←'atfmap.txt'~⍥⊆⍨⊃0(⎕NINFO⍠1)⊢sourcedir,'/*'
+ files←'/*'~⍥{⊃⎕NINFO⍠1⊢sourcedir,⍵}'/atfmap.txt'
  rewrites←⊃⎕NINFO⍠1⊢targetdir,'/rewrite/*'
  r←(⍕≢files),' files processed (',(⍕≢rewrites),' were replaced by rewrites)'
  files/⍨←~files∊⍥(1↓¨⎕NPARTS)rewrites
