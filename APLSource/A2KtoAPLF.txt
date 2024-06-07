@@ -1,4 +1,4 @@
- r←fns A2KtoAPLF path;fn;cont;tn;i
+ r←fns A2KtoAPLF path;fn;cont;tn;i;name
  :If 0=⎕NC'fns'
      fns←0 ⎕NL 3
  :EndIf
@@ -6,23 +6,20 @@
      fns←,⊂fns
  :EndIf
  path,←'/'↓⍨'/\'∊⍨¯1↑path
- :try
+ :Try
      ⎕MKDIR path
- :catchall
- :endtry
+ :CatchAll
+ :Endtry
  :For fn :In fns
      tn←¯1+⌊/¯1,⎕xnnums
-     :try
-         tn ⎕XNCREATE⍨path,fn,'.aplf'
-     :catchall
-         :for i :in ⍳9
-            :try
-                tn ⎕XNCREATE⍨path,fn,'-',(⍕i),'.aplf'
-                :Leave
-            :catchall
-            :endtry
-         :endfor
-     :endtry
+     name←path,fn,'.aplf'
+     :Try
+retry:   name ⎕XNCREATE tn
+     :CatchAll
+         name ⎕XNTIE tn
+         name ⎕XNERASE tn
+         :GoTo retry
+     :EndTry
      cont←⎕UCS'X-APL'⎕UCS ⎕CV 0 ⎕CR fn
      cont ⎕NAPPEND tn
      ⎕NUNTIE tn
