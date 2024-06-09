@@ -1,0 +1,21 @@
+z←RepArr a;s;⎕pp
+⎕pp←17
+s←⍴a
+z←'('
+:if ⍬≡s
+    z,←'⍬⍴⊂'
+:else
+    z,←'⍴',⍨⍕s
+:endif
+a←a↑⍨1⌈⍴a←,a
+:select ⎕dr a
+:caselist 11 323 645
+    z,←⍕a
+:caselist 82 322
+    z,←'⎕ucs ',⍕⎕ucs 'x-apl'⎕ucs a
+:caselist 326 807
+    z,←∊RepArr¨a
+:else
+    ⎕error 'DOMAIN ERROR: Unsupported data type: ',⍕⎕dr a
+:endselect
+z,←')'
