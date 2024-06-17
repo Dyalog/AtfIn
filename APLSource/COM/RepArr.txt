@@ -1,4 +1,6 @@
 z←RepArr a;s;⎕pp
+⍝ Represent a APL+Win array without clever techniques
+⍝ Result is parenthesised Dyalog expression
 ⎕pp←17
 s←⍴a
 z←'('

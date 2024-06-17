@@ -1,0 +1,45 @@
+ val←{init}A2KExec arg;ws;code;val;hex;⎕IO;av
+ ⍝ This function takes an APL+Win expression and executes it in APL+Win via COM
+ ⍝ Initialise with 'path to a2kexec.w3'A2KExec'' (creates global "a2ki" object)
+ ⍝ Then call A2KExec'⍳10'
+ ⍝ Returns ⎕NULL upon value error (including if expression doesn't have a result)
+ ⍝ Signals errors appropriately. Unknown errors are given EN 200
+ ⍝ Prompts for path if workspace isn't found; cancel with →
+
+ ⎕IO←0
+ :If 0≠⎕NC'init'
+     init←''
+ :OrIf 0=⎕NC'a2ki'
+     ws←∊⎕NPARTS⍕init
+     :While ~⎕NEXISTS ws,'.w3'
+         ⍞←'Enter location of a2kexec.w3',⎕UCS 13
+         ws←(⊃⎕NPARTS⍞),'a2kexec'
+         :If '→'∊ws
+             :Return
+         :EndIf
+     :EndWhile
+     a2ki←⎕NEW'OLEClient'(⊂'ClassName' 'APLW.WSEngine')
+     a2ki.Visible←0
+     {}a2ki.SysCall'XLOAD'ws
+ :EndIf
+     ⍝0123456789ABCDEF
+ av←,'␀␁€⍷⋄¨←␇␈␉␊⊂␌␍⊃⍟' ⍝0_
+ av,←'åæì⍫ùò⍬⍵↑↓→␛⊣⊢⍋⍒' ⍝1_
+ av,←' !"#$%&'''        ⍝2_
+ av,←'()*+,-./' ⍝2_
+ av,←'0123456789:;<=>?' ⍝3_
+ av,←'@ABCDEFGHIJKLMNO' ⍝4_
+ av,←'PQRSTUVWXYZ[\]^_' ⍝5_
+ av,←'`abcdefghijklmno' ⍝6_
+ av,←'pqrstuvwxyz{|}~≢' ⍝7_
+ av,←'Çüéâäà≠çêëèïî⌈Ä⌊' ⍝8_
+ av,←'É∆×ôö⎕û⍞⌹ÖÜ¢£¥⍪⍨' ⍝9_
+ av,←'áíóúñÑ⍝⍀¿⌷õøý¡«»' ⍝A_
+ av,←'░▒▓│┤╡╢╖╕╣║╗╝╜╛┐' ⍝B_
+ av,←'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ' ⍝C_
+ av,←'-ÑÒÓÔÕÖ+ØÙÚÛÜÝ∣ÿ' ⍝D_
+ av,←'⍺ß⍳⍤ã⍱⊥⊤⌽⊖⍲⌿∇⍉∊∩' ⍝E_
+ av,←'≡⍙≥≤⍕⍎÷"∘○∨⍴∪¯∣ '  ⍝F_
+ hex←(⎕D,⎕A)[,⍉16 16⊤av⍳,⍕arg]
+ (code val)←⍎(,¨'cpqz')⎕R(,¨'⊂⍴⎕⍬')a2ki.Call'Exec'hex
+ (⊢⎕SIGNAL(⎕EM⍳199)⍳0~⍨⊆)code

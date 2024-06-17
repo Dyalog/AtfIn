@@ -1,0 +1,23 @@
+z←RepArr a;s;⎕pp
+⍝ Represent a Dyalog array without clever techniques
+⍝ Result is parenthesised APL+Win expression
+⎕pp←17
+s←⍴a
+z←'('
+:if ⍬≡s
+    z,←'⍬⍴⊂'
+:else
+    z,←'⍴',⍨⍕s
+:endif
+a←a↑⍨1⌈⍴a←,a
+:select ⎕dr a
+:caselist 11 83 163 323 645
+    z,←⍕a
+:caselist 80 160 320
+    z,←'⎕UCS ',⍕⎕ucs a
+:caselist 326
+    z,←∊RepArr¨a
+:else
+    ⎕SIGNAL⊂('EN' 11)('Message' 'Unsupported data type: ',⍕⎕dr a)
+:endselect
+z,←')'
