@@ -1,0 +1,37 @@
+failed←sourcePath CFOut outPath;file;tn;first;last;⎕IO;vals;files;name;vars
+⍝∇ Export source component files as nested vectors
+⍝∇ Out'C:\tmp' ⍝ creates C:\tmp\source.ATF from C:\source
+⍝∇ left argument is path to source installation (default: C:\source)
+⎕IO←0
+:If ⎕MONADIC
+  sourcePath←'C:\source'
+:EndIf
+
+sourcePath,←'\'↓⍨'/\'∊⍨¯1↑sourcePath
+outPath,←'\'↓⍨'/\'∊⍨¯1↑outPath
+
+failed←0⍴⊂''
+
+3 ⎕CMD'dir /b /s ',sourcePath,'*.sf* > ',outPath,'source.DIR'
+tn←¯1+⌊/⎕XNNUMS,⎕NNUMS,0
+tn ⎕NTIE⍨outPath,'source.DIR'
+files←⎕NREAD tn 82(⎕NSIZE tn)0
+tn ⎕NERASE⍨outPath,'source.DIR'
+
+:For file :In ⎕CN files
+  name←file↓⍨⍴sourcePath ⋄ ((name∊'/\.')/name)←'_'
+  :Try
+    tn←1+⌈/⎕XFNUMS,⎕FNUMS,0
+    file ⎕XFTIE tn
+    (first last)←2↑⎕FSIZE tn
+    vals←⎕FREAD¨tn,¨first+⍳last-first
+   
+    ⍎name,'←vals'
+  :CatchAll
+    failed,←⊂file
+  :EndTry  
+:EndFor
+
+3 ⎕CMD'del ',outPath,'source.ATF'
+vars←⎕NL 2
+⎕UCMD(0⍴⎕EX(~∨/'_'=vars)⌿vars),'out ',outPath,'source'
