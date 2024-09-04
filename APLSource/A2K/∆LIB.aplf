@@ -11,4 +11,4 @@
          'LIBRARY NOT FOUND'⎕SIGNAL 22
      :EndIf
  :EndIf
- ⊃⍤0⊢2⊃¨⎕NPARTS⊃⎕NINFO⍠1⊢y,(''≡y)↓'/*.',ext
+ r←⊃⍤0⊢2⊃¨⎕NPARTS⊃⎕NINFO⍠1⊢y,(''≡y)↓'/*.',ext
