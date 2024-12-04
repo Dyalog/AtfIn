@@ -1,4 +1,5 @@
- R←∆XLIB X
+ R←∆XLIB X;⎕ML
+ ⎕ML←1
  X,←'*'↓⍨≢X
  :If 0∊⍴R←↑⊃⎕NINFO⍠1⊢X
      :If ∨/'?*'∊X
