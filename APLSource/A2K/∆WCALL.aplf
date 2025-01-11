@@ -1,9 +1,7 @@
 r←∆WCALL args;fn;flags;f
-
 :Select 1⊃,⊆args
 :Case 'W_Init'
     r←'' '' (1↓∊' ',¨ 1↓2 ⎕NQ '.' 'GetCommandLineArgs')
-    ⍝ jsjjs
 :Case 'MessageBox' ⍝ 0 question title ('MB_ICONQUESTION MB_YESNOCANCEL')
     flags←' '(≠⊆⊢) 5⊃args
     f←+/(MB_FLAGS[;2],0)[MB_FLAGS[;1]⍳flags]
@@ -13,6 +11,9 @@ r←∆WCALL args;fn;flags;f
     f←(SW_FLAGS[;2],0)[SW_FLAGS[;1]⍳args[7]]
     'fn'⎕NA'P shell32|ShellExecute* P <0T <0T P P I4'
     r←fn f@6⊢1↓args
+:Case 'MessageBeep'
+    'fn'⎕NA'P user32|MessageBeep I'
+    r←fn 0
 :Else
    'This WCALL not currently supported' ⎕SIGNAL 11
 :EndSelect
