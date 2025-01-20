@@ -1,0 +1,19 @@
+ failed←{outDir}In sourceATF;vars;var;file;⎕ML;atf
+ ⎕ML←1
+ :If 900⌶⍬
+     outDir←⊃⎕NPARTS sourceATF
+ :EndIf
+ :With 'atf'⎕NS ⍬
+     ⎕SE.UCMD'In ',sourceATF
+ :EndWith
+ vars←{⍵/⍨'_'∊¨⍵}atf.⎕NL ¯2
+ 1 ⎕MKDIR outDir∘,¨∪'^([a-z]+)_.+_'⎕S'\1'⎕OPT 1⊢vars
+ failed←0⍴⊂''
+ :For var :In vars
+     :Trap 0
+         file←{(1<≢⍵)(0⌈¯2+≢⍵)1/'/ .'}@{'_'=⍵}var
+         ⎕FUNTIE(atf⍎var)(⊢⊣⎕FAPPEND¨)0 ⎕FCREATE⍨outDir,'/',file
+     :Else
+         failed,←⊂var
+     :EndTrap
+ :EndFor

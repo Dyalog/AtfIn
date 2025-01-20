@@ -19,7 +19,7 @@ files←⎕NREAD tn 82(⎕NSIZE tn)0
 tn ⎕NERASE⍨outPath,'source.DIR'
 
 :For file :In ⎕CN files
-  name←file↓⍨⍴sourcePath ⋄ ((name∊'/\.')/name)←'_'
+  name←file↓⍨⍴sourcePath ⋄ ((name∊'/\. ')/name)←'_'
   :Try
     tn←1+⌈/⎕XFNUMS,⎕FNUMS,0
     file ⎕XFTIE tn
