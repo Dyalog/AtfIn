@@ -1,0 +1,2 @@
+R←∆FSIZE tie
+R←(⎕FSIZE tie),0 ⍝ Add "estimate of wasted space"
