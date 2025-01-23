@@ -1,0 +1,48 @@
+ failed←{outDir}CFIn2 sourceATF;vars;var;file;⎕ML;atf;files;varGroups;tn;qseosp;DEBUG;Unquot;Execute;val;join;cn;∆ucs
+ ⎕ML←1 ⋄ DEBUG←0
+ :If 900⌶⍬  ⍝ monadic
+     outDir←⊃⎕NPARTS sourceATF
+ :EndIf
+ :With 'atf'⎕NS ⍬
+     Print←{}
+     qseosp←⎕SE.onSessionPrint
+     :If ~DEBUG
+         ⎕SE.onSessionPrint←'Print'
+     :EndIf
+     ⎕SE.UCMD'In ',sourceATF
+     ⎕SE.onSessionPrint←qseosp
+ :EndWith
+ vars←{⍵/⍨'_'∊¨⍵}atf.⎕NL ¯2
+ files←¯7↓¨vars
+ 1 ⎕MKDIR outDir∘,¨∪'^([a-z]+)_.+_'⎕S'/\1'⎕OPT 1∪files
+ varGroups←files{⊂⍵}⌸vars
+ failed←0⍴⊂''
+ ⎕FUNTIE ⎕FNUMS
+ ∆ucs←{⎕UCS 126@(8764∘=)94@(8743∘=)42@(8902∘=)⍵}
+ :For file vars :InEach (∪files)varGroups
+     file←outDir,{(1≠≢⍵)(0⌈¯2+≢⍵)1/'/ .'}@{'_'=⍵}file
+     :If vars≢vars[⍋vars]
+         ∘∘∘ ⍝ assertion error
+     :EndIf
+     1 ⎕NDELETE file
+     tn←file ⎕FCREATE 0
+     :For var :In vars
+         :Trap 0
+             val←atf⍎var
+             :If 1=≡val
+                 val←'⎕'⎕R'∆'⊢val
+                 val←⍎val
+             :Else
+                 val←'⎕'⎕R'∆'¨val
+                 val←⍎¨val
+             :EndIf
+             cn←val ⎕FAPPEND tn
+             :If cn≠1+⍎¯6↑var
+                 ∘∘∘ ⍝ wires crossed
+             :EndIf
+         :Else
+             failed,←⊂var
+         :EndTrap
+     :EndFor
+     ⎕FUNTIE tn
+ :EndFor

@@ -4,11 +4,8 @@ z←RepArr a;s;⎕pp
 ⎕pp←17
 s←⍴a
 z←'('
-:if ⍬≡s
-    z,←'⍬⍴⊂'
-:else
-    z,←'⍴',⍨⍕s
-:endif
+z,←(⍬≢s)/'⍴',⍨⍕s
+z,←(1≥×/s)/'⊂'
 a←a↑⍨1⌈⍴a←,a
 :select ⎕dr a
 :caselist 11 323 645

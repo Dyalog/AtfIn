@@ -1,4 +1,4 @@
- failed←{outDir}In sourceATF;vars;var;file;⎕ML;atf
+ failed←{outDir}CFIn sourceATF;vars;var;file;⎕ML;atf
  ⎕ML←1
  :If 900⌶⍬
      outDir←⊃⎕NPARTS sourceATF
