@@ -1,1 +1,12 @@
- ∆SS←{⍵⍷⍺}
+ ∆SS←{
+     ⍺←⎕SIGNAL 2 ⍝ SYNTAX
+
+     Single←1∧.=⍴
+     Vec←1=≢∘⍴
+     ⍺⍲⍥(Vec∨Single)⍵:⎕SIGNAL 4 ⍝ RANK
+
+     Char←0 2∊⍨10|⎕DR
+     ⍺∨⍥(~Char)⍵:⎕SIGNAL 11 ⍝ DOMAIN
+
+     ⍵⍷⍥,⍺
+ }
