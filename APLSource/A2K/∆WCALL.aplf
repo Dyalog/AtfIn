@@ -14,6 +14,12 @@ r←∆WCALL args;fn;flags;f
 :Case 'MessageBeep'
     'fn'⎕NA'P user32|MessageBeep I'
     r←fn 0
+:Case 'SendMessage'
+    f←WM_FLAGS[WM_FLAGS[;1]⍳args[3];2] ⍝ Crash with INDEX ERROR for as yet unsupported messages
+    'fn'⎕NA'I user32|SendMessage* I I I <0T'
+    :If 0≡5⊃args ⋄ (5⊃args)←'' ⋄ :EndIf
+    r←fn f@2⊢1↓args
+
 :Else
    'This WCALL not currently supported' ⎕SIGNAL 11
 :EndSelect
