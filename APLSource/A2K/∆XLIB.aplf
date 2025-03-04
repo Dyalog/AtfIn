@@ -1,6 +1,10 @@
  R←∆XLIB X;⎕ML
  ⎕ML←1
  X,←'*'↓⍨≢X
+ :If ⎕NEXISTS X
+ :AndIf 1=1 ⎕NINFO X ⍝ dir
+     X,←'/*'
+ :EndIf
  :If 0∊⍴R←↑⊃⎕NINFO⍠1⊢X
      :If ∨/'?*'∊X
          R←0 0⍴' '
