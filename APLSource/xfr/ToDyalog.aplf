@@ -1,4 +1,4 @@
- r←{files}ToDyalog(sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z;dest;rewrites;rewrote
+ rewrites←{files}ToDyalog(sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z;dest;rewrote
 ⍝ Convert a folder containing APL source files (.aplf and .apla) to Dyalog APL
 ⍝ From APL interpreter indentified by sourceapl
 
@@ -31,8 +31,8 @@
  :EndIf
  rewrites←⊃⎕NINFO⍠1⊢targetdir,'/rewrite/*'
  rewrote←files∊⍥(1↓¨⎕NPARTS)rewrites
+ rewrites←rewrote/files
  files/⍨←~rewrote
- r←(⍕≢files),' files processed (',(⍕+/rewrote),' were replaced by rewrites)'
 
  ⍞←'Progress: '
  :For file :In files
@@ -52,3 +52,4 @@
          ⍞←'?'
      :EndSelect
  :EndFor
+ ⍞←(⎕UCS 13),(⍕≢files),' files processed ─ ',(⍕+/rewrote),' were replaced by rewrites'
