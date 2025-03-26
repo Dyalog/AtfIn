@@ -1,4 +1,4 @@
- r←ToDyalog(sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z;dest;rewrites
+ r←{files}ToDyalog(sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z;dest;rewrites;rewrote
 ⍝ Convert a folder containing APL source files (.aplf and .apla) to Dyalog APL
 ⍝ From APL interpreter indentified by sourceapl
 
@@ -6,9 +6,10 @@
  :OrIf 1≠⊃1 ⎕NINFO sourcedir
      →0⊣r←'Not a directory: ',sourcedir
  :EndIf
-
  3 ⎕MKDIR targetdir
- ⎕NDELETE⍠1⊢targetdir,'/*.apl?'
+ :If 0=⎕NC'files'
+     ⎕NDELETE⍠1⊢targetdir,'/*.apl?'
+ :EndIf
 
  :If (≢∆APLs)<APLtype←∆APLs⍳⍥⎕C⊂sourceapl
      →0⊣r←'sourceapl must be one of: ',⍕∆APLs
@@ -23,10 +24,15 @@
      ∆⍙CodT←DefTranslation 1 ⎕C sourceapl
  :EndIf
 
- files←'/*'~⍥{⊃⎕NINFO⍠1⊢sourcedir,⍵}'/atfmap.txt'
+ :If 0=⎕NC'files'
+     files←'/*'~⍥{⊃⎕NINFO⍠1⊢sourcedir,⍵}'/atfmap.txt'
+ :Else
+     files←(sourcedir,'/',∊)¨1↓¨⎕NPARTS files
+ :EndIf
  rewrites←⊃⎕NINFO⍠1⊢targetdir,'/rewrite/*'
- r←(⍕≢files),' files processed (',(⍕≢rewrites),' were replaced by rewrites)'
- files/⍨←~files∊⍥(1↓¨⎕NPARTS)rewrites
+ rewrote←files∊⍥(1↓¨⎕NPARTS)rewrites
+ files/⍨←~rewrote
+ r←(⍕≢files),' files processed (',(⍕+/rewrote),' were replaced by rewrites)'
 
  ⍞←'Progress: '
  :For file :In files
@@ -36,13 +42,13 @@
      :Select 3⊃parts
      :Case '.aplf'
          src←∆fixrep src
-         (⊂src)⎕NPUT dest
+         (⊂src)⎕NPUT dest 1
          ⍞←'f'
      :Case '.apla'
-         (⊂src)⎕NPUT dest
+         (⊂src)⎕NPUT dest 1
          ⍞←'a'
      :Else
-         dest ⎕NCOPY file
+         dest ⎕NCOPY⍠'IfExists' 'Replace'⊢file
          ⍞←'?'
      :EndSelect
  :EndFor
