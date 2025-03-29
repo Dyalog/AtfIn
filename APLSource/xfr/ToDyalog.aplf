@@ -1,7 +1,8 @@
- rewrites←{files}ToDyalog(sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z;dest;rewrote
+ rewrites←{files}ToDyalog(sourcedir targetdir sourceapl);files;file;src;APLtype;new;parts;map;z;dest;rewrote;⎕ML
 ⍝ Convert a folder containing APL source files (.aplf and .apla) to Dyalog APL
 ⍝ From APL interpreter indentified by sourceapl
 
+ ⎕ML←1
  :If ~⎕NEXISTS sourcedir
  :OrIf 1≠⊃1 ⎕NINFO sourcedir
      →0⊣r←'Not a directory: ',sourcedir
@@ -41,9 +42,13 @@
      dest←targetdir,'/',∊1↓parts
      :Select 3⊃parts
      :Case '.aplf'
-         src←∆fixrep src
-         (⊂src)⎕NPUT dest 1
-         ⍞←'f'
+         :Trap 0
+            src←∆fixrep src
+            (⊂src)⎕NPUT dest 1
+            ⍞←'f'
+         :Else
+            ⎕←'failed to process "',file,'": ',,⍕⎕DMX.DM
+         :EndTrap
      :Case '.apla'
          (⊂src)⎕NPUT dest 1
          ⍞←'a'
