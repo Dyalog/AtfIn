@@ -1,4 +1,4 @@
  r_←∆EX n_;⎕ML;t
-⍝ Simulate ⎕ERASE
+⍝ Simulate ⎕EX
  ⎕ML←3 ⋄ t←⎕IO⊃⎕RSI
  r_←t.⎕EX n_←⊃(n_≠' ')⊂n_←,' ',n_
