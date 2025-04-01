@@ -1,5 +1,0 @@
-r←foo;i
-:for i :in ⍳10
-⍎':leave'
-⎕←i
-:end

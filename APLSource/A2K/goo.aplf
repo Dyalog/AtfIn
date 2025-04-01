@@ -1,5 +1,0 @@
-r←goo;foo
-foo←2
-∘∘∘
-⎕←⎕SI
-r←⎕STATE'foo'
