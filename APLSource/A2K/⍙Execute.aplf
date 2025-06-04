@@ -1,0 +1,6 @@
+ ⍙Execute←{⍺←⊃⍬⍴⎕RSI ⋄ ⍺⍎'''[^'']*''' '⍎'⎕R(⎕UCS 38)('{'(⊢↓⍨⎕IO-⍨⍳⍨)⊃⍬⍴⎕NR⊃⍬⍴⎕SI)⊢'''[^'']*''' '"[^"]*"'⎕R{⍵.((,'"')''''⎕R'''' ''''''⍣PatternNum⊢Match)}⍵}
+ ⍝ Cover for ⍎ which handles "string"s and injects its own source code wherever a ⍎ is found (must be one-liner!)
+ ⍝             ┌─────Inject own source code wherever a ⍎ is found─────┐ ┌──Convert "string"s to 'string's without affecting " in 'strings'───┐
+ ⍝   ┌call ns┐ ┌─'string'─┐      ┌─esc &─┐ ┌erase "name←"┐┌own source┐  ┌──'str'───┐ ┌─"str"─┐             ┌┬double───┬┬┬┐ ┌─if "str"─┐
+ ⍝   (⊃⍬⍴⎕RSI)⍎'''[^'']*''' '⍎'⎕R(⎕UCS 38)('{'(⊢↓⍨⎕IO-⍨⍳⍨)⊃⍬⍴⎕NR⊃⍬⍴⎕SI)⊢'''[^'']*''' '"[^"]*"'⎕R{⍵.((,'"')''''⎕R'''' ''''''⍣PatternNum⊢Match)}⍵
+ ⍝                (keep)                                                   (keep)    (convert)         └──make '─┴┘
