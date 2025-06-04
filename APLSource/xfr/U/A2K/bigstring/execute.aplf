@@ -1,10 +1,14 @@
- {r}←where execute exp;lev;b;L;head;n;V;eis;sok;nt;sp;rp;cut
+ {r}←where execute exp;lev;b;L;head;n;V;eis;sok;nt;sp;rp;cut;⍙Execute
 ⍝ Cover for ⍎ that can deal with many tokens and " delimited strings
 ⍝ exp only contains numeric or character elements (scalars or vectors) and maybe [←⍴,⊂]
+
+ ⍝ See #.A2K.⍙Execute for comments
+ ⍙Execute←{⍺←⊃⍬⍴⎕RSI ⋄ ⍺⍎'''[^'']*''' '⍎'⎕R(⎕UCS 38)('{'(⊢↓⍨⎕IO-⍨⍳⍨)⊃⍬⍴⎕NR⊃⍬⍴⎕SI)⊢'''[^'']*''' '"[^"]*"'⎕R{⍵.((,'"')''''⎕R'''' ''''''⍣PatternNum⊢Match)}⍵}
+
  (where sok)←2↑where,0 ⍝ does the string have to be checked for "s (1=OK)?
  exp←sok fixQuote exp
  :Trap 10 1 ⍝ LIMIT and WSFULL
-     r←where⍎exp
+     r←where ⍙Execute exp
  :Else
        ⍝ There may be a header, e.g. var←
        ⍝ The executable part is divided into elements
@@ -23,7 +27,7 @@
          n←sp/⍳⍴sp           ⍝ tokens are separated by spaces
          n←n[⌈(⍴n)÷2]        ⍝ go in the middle
          V←(eis where 1 execute n↑exp),eis where 1 execute n↓exp
-         r←where⍎head,(⎕CS''),'.V'
+         r←where ⍙Execute head,(⎕CS''),'.V'
      :Else  ⍝ This is nested.
        ⍝ We grab the next level of nesting, execute each set of parens and
        ⍝ insert them in the result.
@@ -32,6 +36,6 @@
              ⍝ We know where each piece goes, put them back in the expression
          (b/exp)←∊(⍴¨⊂⍨cut)↑¨'(',¨(⍕¨⍳⍴V),¨⊂'⊃',(⎕CS''),'.V)'
              ⍝ This better work
-         r←where⍎head,exp
+         r←where ⍙Execute head,exp
      :EndIf
  :EndTrap
