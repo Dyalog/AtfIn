@@ -3,7 +3,7 @@
  ⎕IO←1
  :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
  file←1⊃V
- type←819⌶2⊃V ⍝ Lowercase
+ type←⎕C 2⊃V
 
  1 ⎕NDELETE file
 

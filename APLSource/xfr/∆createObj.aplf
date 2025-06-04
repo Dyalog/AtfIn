@@ -109,7 +109,7 @@
      value←⍎(set/((name≢,'⎕')/'target.'),name,'←'),'shape⍴⎕ucs ',str
  :Case 'N'        ⍝ Numeric data
  ⍝ 2013: V13.2 introduced a new ⎕RL which is incompatible with previous versions
-     :If '⎕rl'≡819⌶name
+     :If '⎕rl'≡⎕C name
          ⎕←'** WARNING: Import of ⎕RL not supported; value was: ',{30<≢⍵:'...',⍨20↑⍵ ⋄ ⍵}str
      :Else
          value←⍎(set/'target.',name,'←'),'shape⍴',str,',⍳0'  ⍝ a LIMIT error could occur if 15<⍴shape

@@ -1,7 +1,7 @@
  Z←∆IMPORT V;file;type;⎕IO ⍝ Emulate APLX ⎕import
  ⎕IO←1
  :If 1=≡,V ⋄ V←V({(-⊥⍨'.'≠⍵)↑⍵}V) ⋄ :EndIf ⍝ use extension as type if simple string
- file←1⊃V ⋄ type←819⌶2⊃V ⍝ Lowercase
+ file←1⊃V ⋄ type←⎕C 2⊃V
 
  :Select type
  :Case 'txt'
